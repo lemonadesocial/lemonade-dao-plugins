@@ -9,7 +9,8 @@
     "prettier:check": "prettier --check --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:write": "prettier --write --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
-    "deploy:goerli": "hardhat run scripts/deploy.ts --network goerli"
+    "deploy:goerli": "hardhat run scripts/deploy.ts --network goerli",
+    "deploy:mumbai": "hardhat run scripts/deploy.ts --network mumbai"
   },
   "keywords": [],
   "author": "",

@@ -8,23 +8,6 @@ async function main() {
     `Deploying contracts with the account: ${deployer.account.address}`,
   );
 
-  // Lock (boilerplates from hardhat)
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = BigInt(currentTimestampInSeconds + 60);
-
-  const lockedAmount = parseEther("0.001");
-
-  const lock = await hre.viem.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  console.log(
-    `Lock with ${formatEther(
-      lockedAmount,
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`,
-  );
-
-  // Greeter
   const greet = await hre.viem.deployContract("GreetPluginSetup");
 
   console.log(`Greet deployed to ${greet.address}`);

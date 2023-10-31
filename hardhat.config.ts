@@ -9,6 +9,9 @@ const goerliAlchemyKey = process.env.GOERLI_ALCHEMY_KEY;
 // To find a private key, go to your wallet of choice and export a private key. Remember this must be kept secret at all times.
 const privateKeyGoerli = process.env.GOERLI_WALLET_PRIVATE_KEY;
 
+const mumbaiAlchemyKey = process.env.MUMBAI_ALCHEMY_KEY;
+const privateKeyMumbai = process.env.MUMBAI_WALLET_PRIVATE_KEY;
+
 module.exports = {
   defaultNetwork: "hardhat",
   networks: {
@@ -17,6 +20,11 @@ module.exports = {
       url: `https://eth-goerli.g.alchemy.com/v2/${goerliAlchemyKey}`,
       accounts: [privateKeyGoerli],
     },
+    mumbai: {
+      url: `https://polygon-mumbai.g.alchemy.com/v2/${mumbaiAlchemyKey}`,
+      gas: 2000,
+      accounts: [privateKeyMumbai]
+    }
   },
   solidity: {
     version: "0.8.19",
