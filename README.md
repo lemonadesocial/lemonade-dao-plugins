@@ -8,6 +8,7 @@ This repository holds the plugins (smart contracts) that extend the functionalit
 - [Solhint](https://github.com/protofire/solhint): code linter
 - [Solcover](https://github.com/sc-forks/solidity-coverage): code coverage
 - [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity): code formatter
+- [Alchemy](https://dashboard.alchemy.com/): powerful Web3 tools provider (for deployment. see `hardhat.config.js`)
 
 ## Deployment
 
