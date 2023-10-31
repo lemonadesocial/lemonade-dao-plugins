@@ -8,7 +8,7 @@ async function main() {
   const getGreeterSetup = await ethers.getContractFactory("GreetPluginSetup");
   const GreeterSetup = await getGreeterSetup.deploy();
 
-  console.log("GreeterSetup deployed to:", GreeterSetup.address);
+  console.log("GreeterSetup deployed to:", await GreeterSetup.getAddress());
 }
 
 // We recommend this pattern to be able to use async/await everywhere
