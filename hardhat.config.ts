@@ -2,6 +2,7 @@ import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
 import "@nomicfoundation/hardhat-toolbox-viem";
+import 'solidity-coverage'
 
 // To find your Alchemy key, go to https://dashboard.alchemy.com/. Infure or any other provider would work here as well.
 const goerliAlchemyKey = process.env.GOERLI_ALCHEMY_KEY;
