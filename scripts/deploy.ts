@@ -1,16 +1,14 @@
-import { formatEther, parseEther } from "viem";
-import hre from "hardhat";
+import { ethers } from "hardhat";
 
 async function main() {
-  const [deployer] = await hre.viem.getWalletClients();
+  const [deployer] = await ethers.getSigners();
 
-  console.log(
-    `Deploying contracts with the account: ${deployer.account.address}`,
-  );
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  const greet = await hre.viem.deployContract("GreetPluginSetup");
+  const getGreeterSetup = await ethers.getContractFactory("GreetPluginSetup");
+  const GreeterSetup = await getGreeterSetup.deploy();
 
-  console.log(`Greet deployed to ${greet.address}`);
+  console.log("GreeterSetup deployed to:", GreeterSetup.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

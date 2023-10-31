@@ -1,7 +1,7 @@
 import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
-import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-toolbox";
 import "solidity-coverage";
 
 // To find your Alchemy key, go to https://dashboard.alchemy.com/. Infure or any other provider would work here as well.
