@@ -1,13 +1,12 @@
-# Sample Hardhat Project
+# Lemonade DAO plugins
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This repository holds the plugins (smart contracts) that extend the functionalities of the DAO created with Aragon
 
-Try running some of the following tasks:
+## Deployment
+
+Use the `deploy.ts` script and specify a network that you wish to deploy the your plugins
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+npx hardhat run --network goerli scripts/deploy.ts
 ```
+**NOTES: If deploying to local `--network localhost`, ensure `npx hardhat node` is run in another terminal to open port 8545**
