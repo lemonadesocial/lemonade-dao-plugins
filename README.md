@@ -16,4 +16,5 @@ Use the `deploy.ts` script and specify a network that you wish to deploy the you
 ```shell
 npx hardhat run --network goerli scripts/deploy.ts
 ```
+
 **NOTES: If deploying to local `--network localhost`, ensure `npx hardhat node` is run in another terminal to open port 8545**

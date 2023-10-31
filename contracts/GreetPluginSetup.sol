@@ -16,7 +16,8 @@ contract GreetPluginSetup is PluginSetup {
     {
         plugin = address(new GreetPlugin(IDAO(_dao)));
 
-        PermissionLib.MultiTargetPermission[] memory permissions = new PermissionLib.MultiTargetPermission[](1);
+        PermissionLib.MultiTargetPermission[]
+            memory permissions = new PermissionLib.MultiTargetPermission[](1);
 
         permissions[0] = PermissionLib.MultiTargetPermission({
             operation: PermissionLib.Operation.Grant,
@@ -25,7 +26,7 @@ contract GreetPluginSetup is PluginSetup {
             condition: PermissionLib.NO_CONDITION,
             permissionId: keccak256("GREET_PERMISSION")
         });
-        
+
         preparedSetupData.permissions = permissions;
     }
 

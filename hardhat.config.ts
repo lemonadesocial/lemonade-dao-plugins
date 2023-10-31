@@ -2,7 +2,7 @@ import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
 import "@nomicfoundation/hardhat-toolbox-viem";
-import 'solidity-coverage'
+import "solidity-coverage";
 
 // To find your Alchemy key, go to https://dashboard.alchemy.com/. Infure or any other provider would work here as well.
 const goerliAlchemyKey = process.env.GOERLI_ALCHEMY_KEY;
@@ -12,29 +12,28 @@ const privateKeyGoerli = process.env.GOERLI_WALLET_PRIVATE_KEY;
 module.exports = {
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {
-    },
+    hardhat: {},
     goerli: {
       url: `https://eth-goerli.g.alchemy.com/v2/${goerliAlchemyKey}`,
-      accounts: [privateKeyGoerli]
-    }
+      accounts: [privateKeyGoerli],
+    },
   },
   solidity: {
     version: "0.8.19",
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
-      }
-    }
+        runs: 200,
+      },
+    },
   },
   paths: {
     sources: "./contracts",
     tests: "./test",
     cache: "./cache",
-    artifacts: "./artifacts"
+    artifacts: "./artifacts",
   },
   mocha: {
-    timeout: 40000
-  }
+    timeout: 40000,
+  },
 };

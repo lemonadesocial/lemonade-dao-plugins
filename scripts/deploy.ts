@@ -4,7 +4,9 @@ import hre from "hardhat";
 async function main() {
   const [deployer] = await hre.viem.getWalletClients();
 
-  console.log(`Deploying contracts with the account: ${deployer.account.address}`);
+  console.log(
+    `Deploying contracts with the account: ${deployer.account.address}`,
+  );
 
   // Lock (boilerplates from hardhat)
   const currentTimestampInSeconds = Math.round(Date.now() / 1000);
@@ -18,8 +20,8 @@ async function main() {
 
   console.log(
     `Lock with ${formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+      lockedAmount,
+    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`,
   );
 
   // Greeter

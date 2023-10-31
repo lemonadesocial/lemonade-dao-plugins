@@ -8,7 +8,12 @@ contract GreetPlugin is Plugin {
 
     constructor(IDAO _dao) Plugin(_dao) {}
 
-    function greet() external view auth(GREET_PERMISSION) returns (string memory) {
+    function greet()
+        external
+        view
+        auth(GREET_PERMISSION)
+        returns (string memory)
+    {
         return "Hello, World!";
     }
 }
