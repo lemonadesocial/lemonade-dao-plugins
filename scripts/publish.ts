@@ -17,14 +17,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const pluginName = "adenhall-greeter-plugin";
   const pluginSetupContractName = "GreetPluginSetup";
 
-  const pluginSetupContract = await hre.ethers.getContractAt(
-    pluginSetupContractName,
-    pluginRepoFactoryAddr
-  );
+  // const pluginSetupContract = await hre.ethers.getContractAt(
+  //   pluginSetupContractName,
+  //   deployed plugin contract address goes here (from scripts/deploy.ts)
+  // );
 
   const tx = await pluginRepoFactory.createPluginRepoWithFirstVersion(
     pluginName,
-    '0xEEDC5043C2e5b9c25F7746e94F08F7170A11e03e',
+    '0xEEDC5043C2e5b9c25F7746e94F08F7170A11e03e', // pluginSetupContract.address
     deployer.address,
     "0x00",
     "0x00",
