@@ -8,9 +8,9 @@
     "lint:sol": "solhint 'contracts/**/*.sol'",
     "prettier:check": "prettier --check --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:write": "prettier --write --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
-    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
-    "deploy:goerli": "hardhat run scripts/deploy.ts --network goerli",
-    "deploy:mumbai": "hardhat run scripts/deploy.ts --network mumbai"
+    "deploy:local": "hardhat deploy --network localhost",
+    "deploy:goerli": "hardhat deploy --network goerli",
+    "deploy:mumbai": "hardhat deploy --network mumbai"
   },
   "keywords": [],
   "author": "",
