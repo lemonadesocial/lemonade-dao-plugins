@@ -1,7 +1,12 @@
 import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
-import "@nomicfoundation/hardhat-toolbox";
+import '@nomicfoundation/hardhat-chai-matchers';
+import '@nomicfoundation/hardhat-toolbox';
+import '@nomiclabs/hardhat-etherscan';
+import '@typechain/hardhat';
+import "hardhat-deploy";
+import "hardhat-gas-reporter"
 import "solidity-coverage";
 
 // To find your Alchemy key, go to https://dashboard.alchemy.com/. Infure or any other provider would work here as well.
@@ -23,8 +28,14 @@ module.exports = {
     mumbai: {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${mumbaiAlchemyKey}`,
       gas: 2000,
-      accounts: [privateKeyMumbai]
-    }
+      accounts: [privateKeyMumbai],
+    },
+  },
+  // https://github.com/wighawag/hardhat-deploy#1-namedaccounts-ability-to-name-addresses
+  namedAccounts: {
+    deployer: {
+      default: 0, // This value is the index in the accounts array
+    },
   },
   solidity: {
     version: "0.8.17",
