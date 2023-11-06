@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {PluginSetup} from "@aragon/osx/framework/plugin/setup/PluginSetup.sol";
 import {PermissionLib} from "@aragon/osx/core/permission/PermissionLib.sol";
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
-import {GreetPlugin} from "./GreetPlugin.sol";
+import {GreetPlugin} from "./GreetPluginB1.sol";
 
 contract GreetPluginSetup is PluginSetup {
     function prepareInstallation(
