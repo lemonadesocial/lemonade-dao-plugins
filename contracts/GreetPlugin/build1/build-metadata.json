@@ -1,0 +1,15 @@
+{
+    "ui": {},
+    "change": "Greet Plugin Initial build.",
+    "pluginSetup": {
+        "prepareInstallation": {
+            "description": "The information required for the installation of build 1.",
+            "inputs": []
+        },
+        "prepareUpdate": {},
+        "prepareUninstallation": {
+            "description": "The information required for the uninstallation of build 1.",
+            "inputs": []
+        }
+    }
+}
