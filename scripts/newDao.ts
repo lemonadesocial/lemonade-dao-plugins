@@ -98,7 +98,7 @@ const INSTALLATION_ABI = [
   const steps = client.methods.createDao({
     metadataUri,
     plugins: [pluginInstallItem],
-    ensSubdomain: "adenhall2",
+    ensSubdomain: "adenhall3",
   });
 
   for await (const step of steps) {
