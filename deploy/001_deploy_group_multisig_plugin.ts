@@ -1,11 +1,10 @@
+import releaseMetadata from "../contracts/GroupMultisigPlugin/release-metadata.json";
+import buildMetadata from "../contracts/GroupMultisigPlugin/build-metadata.json";
+import { toHex, uploadToIPFS } from "../utils/ipfs-upload";
 import { PluginRepoFactory__factory } from "@aragon/osx-ethers";
+import { activeContractsList } from "@aragon/osx-ethers";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { activeContractsList } from '@aragon/osx-ethers';
-
-import { toHex, uploadToIPFS } from '../utils/ipfs-upload'
-import releaseMetadata from '../contracts/GroupVotingPlugin/release-metadata.json'
-import buildMetadata from '../contracts/GroupVotingPlugin/build-metadata.json'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
@@ -18,12 +17,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [],
     log: true,
-    skipIfAlreadyDeployed: true
+    skipIfAlreadyDeployed: true,
   });
 
-  const signer = await hre.ethers.getSigner(deployer)
+  const signer = await hre.ethers.getSigner(deployer);
 
-  const pluginRepoFactoryAddr = activeContractsList.mumbai.PluginRepoFactory;
+  const pluginRepoFactoryAddr = "0x4E7c97ab08c046A8e43571f9839d768ae84492e4";
+  // const pluginRepoFactoryAddr = activeContractsList.mumbai.PluginRepoFactory; address coded in the SDK is not correct. Might be an older version
 
   const pluginRepoFactory = PluginRepoFactory__factory.connect(
     pluginRepoFactoryAddr,

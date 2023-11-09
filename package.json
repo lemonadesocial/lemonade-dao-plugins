@@ -10,7 +10,7 @@
     "prettier:write": "prettier --write --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
     "deploy:local": "hardhat deploy --network localhost",
     "deploy:goerli": "hardhat deploy --network goerli",
-    "deploy:mumbai": "hardhat deploy --network mumbai"
+    "deploy:mumbai": "hardhat deploy --network maticmum"
   },
   "keywords": [],
   "author": "",
