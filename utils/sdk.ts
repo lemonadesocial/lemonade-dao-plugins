@@ -11,7 +11,7 @@ import { AllowedNetwork, networkRPC } from "./constants";
 import { activeContractsList } from "@aragon/osx-ethers";
 
 
-const getContectParams = (network: AllowedNetwork): ContextParams => {
+const getContextParams = (network: AllowedNetwork): ContextParams => {
     const IPFS_API_KEY = process.env.IPFS_API_KEY
     const PRIVATE_KEY = process.env.PRIVATE_KEY
 
@@ -24,9 +24,12 @@ const getContectParams = (network: AllowedNetwork): ContextParams => {
 
 
     return {
-        network,
+        network: {
+            name: 'maticmum',
+            chainId: 80001
+        },
         signer: new Wallet(PRIVATE_KEY),
-        daoFactoryAddress: activeContractsList[network]?.DAOFactory || "",
+        daoFactoryAddress: activeContractsList.mumbai?.DAOFactory || "",
         web3Providers: [RPC_URL],
         ipfsNodes: [
             {
@@ -38,13 +41,13 @@ const getContectParams = (network: AllowedNetwork): ContextParams => {
         // They will switch depending on the network (production, development)
         graphqlNodes: [
             {
-                url: "https://subgraph.satsuma-prod.com/qHR2wGfc5RLi6/aragon/osx-goerli/api",
+                url: "https://subgraph.satsuma-prod.com/qHR2wGfc5RLi6/aragon/osx-mumbai/api",
             },
         ],
     }
 }
 
-export const Context = (network: AllowedNetwork) => new Context_(getContectParams(network));
+export const Context = (network: AllowedNetwork) => new Context_(getContextParams(network));
 export const Client = (network: AllowedNetwork) => new Client_(Context(network));
 export const MultisigClient = (network: AllowedNetwork) => new MultisigClient_(Context(network));
 export const TokenVotingClient = (network: AllowedNetwork) => new TokenVotingClient_(Context(network));

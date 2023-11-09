@@ -4,14 +4,14 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { activeContractsList } from '@aragon/osx-ethers';
 
 import { toHex, uploadToIPFS } from '../utils/ipfs-upload'
-import releaseMetadata from '../contracts/GreetPlugin/release-metadata.json'
-import buildMetadata from '../contracts/GreetPlugin/build1/build-metadata.json'
+import releaseMetadata from '../contracts/GroupVotingPlugin/release-metadata.json'
+import buildMetadata from '../contracts/GroupVotingPlugin/build-metadata.json'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "adenhall-test-plugin";
-  const pluginSetupContractName = "GreetPluginSetup";
+  const pluginName = "lemonade-communities-test-3";
+  const pluginSetupContractName = "GroupMultisigSetup";
   const { deployer } = await getNamedAccounts();
 
   const deployedSetupContract = await deploy(pluginSetupContractName, {
@@ -49,7 +49,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     signer.address,
     toHex(releaseMetadataURI),
     toHex(buildMetadataURI),
-    { gasLimit: 10000000 }
+    { gasLimit: 1000000 }
   );
 
   console.log(

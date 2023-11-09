@@ -1,4 +1,5 @@
-pragma solidity 0.8.17;
+// SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity ^0.8.17;
 
 import {PermissionManager} from "@aragon/osx/core/permission/PermissionManager.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";

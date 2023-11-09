@@ -6,19 +6,19 @@ import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
 import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 import {PermissionLib} from "@aragon/osx/core/permission/PermissionLib.sol";
 import {PluginSetup, IPluginSetup} from "@aragon/osx/framework/plugin/setup/PluginSetup.sol";
-import {MajorityVotingBase} from "@aragon/osx/plugins/governance/majority-voting/MajorityVotingBase.sol";
-import {GroupVoting} from "./GroupVoting.sol";
+import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
+import {GroupMultisig} from "./GroupMultisig.sol";
 
-/// @title GroupVotingSetup
-/// @author Aragon Association - 2022-2023
-/// @notice The setup contract of the `AddresslistVoting` plugin.
-contract GroupVotingSetup is PluginSetup {
-    /// @notice The address of `AddresslistVoting` plugin logic contract to be used in creating proxy contracts.
-    GroupVoting private immutable groupVotingBase;
+/// @title GroupMultisigSetup
+/// @author Lemonade Social - 2022-2023
+/// @notice The setup contract of the `GroupMultisig` plugin.
+contract GroupMultisigSetup is PluginSetup {
+    /// @notice The address of `GroupMultisig` plugin logic contract to be used in creating proxy contracts.
+    GroupMultisig private immutable groupMultisigBase;
 
-    /// @notice The contract constructor, that deployes the `AddresslistVoting` plugin logic contract.
+    /// @notice The contract constructor, that deployes the `GroupMultisig` plugin logic contract.
     constructor() {
-        groupVotingBase = new GroupVoting();
+        groupMultisigBase = new GroupMultisig();
     }
 
     /// @inheritdoc IPluginSetup
@@ -26,17 +26,17 @@ contract GroupVotingSetup is PluginSetup {
         address _dao,
         bytes calldata _data
     ) external returns (address plugin, PreparedSetupData memory preparedSetupData) {
-        // Decode `_data` to extract the params needed for deploying and initializing `AddresslistVoting` plugin.
-        (MajorityVotingBase.VotingSettings memory votingSettings) = abi
-            .decode(_data, (MajorityVotingBase.VotingSettings));
+        // Decode `_data` to extract the params needed for deploying and initializing `GroupMultisig` plugin.
+        (Multisig.MultisigSettings memory multisigSettings) = abi
+            .decode(_data, (Multisig.MultisigSettings));
 
         // Prepare and Deploy the plugin proxy.
         plugin = createERC1967Proxy(
-            address(groupVotingBase),
+            address(groupMultisigBase),
             abi.encodeWithSelector(
-                GroupVoting.initialize.selector,
+                Multisig.initialize.selector,
                 _dao,
-                votingSettings
+                multisigSettings
             )
         );
 
@@ -45,13 +45,13 @@ contract GroupVotingSetup is PluginSetup {
             memory permissions = new PermissionLib.MultiTargetPermission[](4);
 
         // Set permissions to be granted.
-        // Grant the list of prmissions of the plugin to the DAO.
+        // Grant the list of permissions of the plugin to the DAO.
         permissions[0] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            groupVotingBase.UPDATE_ADDRESSES_PERMISSION_ID()
+            groupMultisigBase.UPDATE_ADDRESSES_PERMISSION_ID()
         );
 
         permissions[1] = PermissionLib.MultiTargetPermission(
@@ -59,7 +59,7 @@ contract GroupVotingSetup is PluginSetup {
             plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            groupVotingBase.UPDATE_VOTING_SETTINGS_PERMISSION_ID()
+            groupMultisigBase.UPDATE_MULTISIG_SETTINGS_PERMISSION_ID()
         );
 
         permissions[2] = PermissionLib.MultiTargetPermission(
@@ -67,7 +67,7 @@ contract GroupVotingSetup is PluginSetup {
             plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            groupVotingBase.UPGRADE_PLUGIN_PERMISSION_ID()
+            groupMultisigBase.UPGRADE_PLUGIN_PERMISSION_ID()
         );
 
         // Grant `EXECUTE_PERMISSION` of the DAO to the plugin.
@@ -96,7 +96,7 @@ contract GroupVotingSetup is PluginSetup {
             _payload.plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            groupVotingBase.UPDATE_ADDRESSES_PERMISSION_ID()
+            groupMultisigBase.UPDATE_ADDRESSES_PERMISSION_ID()
         );
 
         permissions[1] = PermissionLib.MultiTargetPermission(
@@ -104,7 +104,7 @@ contract GroupVotingSetup is PluginSetup {
             _payload.plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            groupVotingBase.UPDATE_VOTING_SETTINGS_PERMISSION_ID()
+            groupMultisigBase.UPDATE_MULTISIG_SETTINGS_PERMISSION_ID()
         );
 
         permissions[2] = PermissionLib.MultiTargetPermission(
@@ -112,7 +112,7 @@ contract GroupVotingSetup is PluginSetup {
             _payload.plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            groupVotingBase.UPGRADE_PLUGIN_PERMISSION_ID()
+            groupMultisigBase.UPGRADE_PLUGIN_PERMISSION_ID()
         );
 
         permissions[3] = PermissionLib.MultiTargetPermission(
@@ -126,6 +126,6 @@ contract GroupVotingSetup is PluginSetup {
 
     /// @inheritdoc IPluginSetup
     function implementation() external view returns (address) {
-        return address(groupVotingBase);
+        return address(groupMultisigBase);
     }
 }
