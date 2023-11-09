@@ -11,7 +11,8 @@
     "deploy:local": "hardhat deploy --network localhost",
     "deploy:goerli": "hardhat deploy --network goerli",
     "deploy:mumbai": "hardhat deploy --network maticmum",
-    "create:dao:maticmum": "hardhat run scripts/newDao.ts --network maticmum"
+    "create:dao:maticmum": "hardhat run scripts/newDao.ts --network maticmum",
+    "prepare:dao:maticmum": "hardhat run scripts/prepareInstallation.ts --network maticmum"
   },
   "keywords": [],
   "author": "",
