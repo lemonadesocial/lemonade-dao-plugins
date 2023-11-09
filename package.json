@@ -10,7 +10,8 @@
     "prettier:write": "prettier --write --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
     "deploy:local": "hardhat deploy --network localhost",
     "deploy:goerli": "hardhat deploy --network goerli",
-    "deploy:mumbai": "hardhat deploy --network maticmum"
+    "deploy:mumbai": "hardhat deploy --network maticmum",
+    "create:dao:maticmum": "hardhat run scripts/newDao.ts --network maticmum"
   },
   "keywords": [],
   "author": "",
