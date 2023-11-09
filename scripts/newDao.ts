@@ -68,7 +68,7 @@ const INSTALLATION_ABI = [
   );
 
   const pluginInstallItem = {
-    id: LIVE_CONTRACTS[SupportedVersion.LATEST].maticmum.multisigRepoAddress,
+    id: '0x7b2538DD1fedfd3F24a0B90B3c0680d1F9133a16', // ID of the deployed plugin repo (After doing createPluginRepoWithFirstVersion)
     data: hexToBytes(hexBytes),
   };
 

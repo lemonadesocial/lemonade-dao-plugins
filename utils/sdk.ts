@@ -29,7 +29,7 @@ const getContextParams = (network: AllowedNetwork): ContextParams => {
             chainId: 80001
         },
         signer: new Wallet(PRIVATE_KEY),
-        daoFactoryAddress: activeContractsList.mumbai?.DAOFactory || "",
+        daoFactoryAddress: activeContractsList.mumbai.DAOFactory || "",
         web3Providers: [RPC_URL],
         ipfsNodes: [
             {
