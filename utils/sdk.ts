@@ -33,7 +33,7 @@ const getContextParams = (network: AllowedNetwork): ContextParams => {
         web3Providers: [RPC_URL],
         ipfsNodes: [
             {
-                url: "https://test.ipfs.aragon.network/api/v0",
+                url: "https://testing-ipfs-0.aragon.network/api/v0",
                 headers: { "X-API-KEY": IPFS_API_KEY || "" },
             },
         ],

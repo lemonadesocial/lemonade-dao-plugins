@@ -1,16 +1,21 @@
+import { uploadToIPFS } from "../utils/ipfs-upload";
 import { Client } from "../utils/sdk";
-import { DaoCreationSteps, DaoMetadata, MultisigPluginSettings } from "@aragon/sdk-client";
+import {
+  DaoCreationSteps,
+  DaoMetadata,
+} from "@aragon/sdk-client";
 import {
   getNamedTypesFromMetadata,
   LIVE_CONTRACTS,
   hexToBytes,
   SupportedVersion,
+  GasFeeEstimation,
 } from "@aragon/sdk-client-common";
 import { ethers } from "hardhat";
 
 const client = Client("maticmum");
 
-const multisigSettings: MultisigPluginSettings = {
+const multisigSettings = {
   members: ["0x1522d4A58486DBbAf72dd464D57CC93e1Ec0d85c"],
   votingSettings: {
     minApprovals: 1,
@@ -61,16 +66,34 @@ const INSTALLATION_ABI = [
 ];
 
 (async () => {
-  const metadataUri = await client.methods.pinMetadata(metadata);
+  // const metadataUri = await client.methods.pinMetadata(metadata);
+  const metadataUri = `ipfs://${await uploadToIPFS(
+    JSON.stringify(metadata),
+    true // for testing
+  )}`;
   const hexBytes = ethers.utils.defaultAbiCoder.encode(
     getNamedTypesFromMetadata(INSTALLATION_ABI),
-    Object.values(multisigSettings)
+    [
+      multisigSettings.members,
+      [
+        multisigSettings.votingSettings.onlyListed,
+        multisigSettings.votingSettings.minApprovals,
+      ],
+    ],
   );
 
   const pluginInstallItem = {
-    id: '0x7b2538DD1fedfd3F24a0B90B3c0680d1F9133a16', // ID of the deployed plugin repo (After doing createPluginRepoWithFirstVersion)
+    id: "0x7b2538DD1fedfd3F24a0B90B3c0680d1F9133a16", // ID of the deployed plugin repo (After doing createPluginRepoWithFirstVersion)
     data: hexToBytes(hexBytes),
   };
+
+  // Estimate gas for the transaction.
+  // const estimatedGas: GasFeeEstimation = await client.estimation.createDao({
+  //   metadataUri,
+  //   plugins: [pluginInstallItem],
+  //   ensSubdomain: "adenhall2",
+  // });
+  // console.log({ avg: estimatedGas.average, max: estimatedGas.max });
 
   const steps = client.methods.createDao({
     metadataUri,
