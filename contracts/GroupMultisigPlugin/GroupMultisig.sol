@@ -57,7 +57,7 @@ contract GroupMultisig is Multisig {
     /// @notice Adds new members to the address list.
     /// @param _members The addresses of members to be added.
     /// @dev This function is used during the plugin initialization.
-    function addAddresses(
+    function addAddressesToGroup(
         address[] calldata _members,
         uint256 _groupId
     ) external auth(UPDATE_ADDRESSES_PERMISSION_ID) {
@@ -68,7 +68,7 @@ contract GroupMultisig is Multisig {
 
     /// @notice Removes existing members from the address list.
     /// @param _members The addresses of the members to be removed.
-    function removeAddresses(
+    function removeAddressesToGroup(
         address[] calldata _members,
         uint256 _groupId
     ) external auth(UPDATE_ADDRESSES_PERMISSION_ID) {
