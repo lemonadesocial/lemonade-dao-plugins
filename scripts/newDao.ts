@@ -8,10 +8,11 @@ import {
   getNamedTypesFromMetadata,
   hexToBytes,
   GasFeeEstimation,
+  SupportedNetwork
 } from "@aragon/sdk-client-common";
 import { ethers } from "hardhat";
 
-const client = Client("maticmum");
+const client = Client(SupportedNetwork.MUMBAI);
 
 // Once a DAO created, change this to create a new DAO
 const DAO_ENS = 'lemonade-dao-test';
