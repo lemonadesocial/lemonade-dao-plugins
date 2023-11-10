@@ -10,7 +10,7 @@ import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
 import {GroupMultisig} from "./GroupMultisig.sol";
 
 /// @title GroupMultisigSetup
-/// @author Lemonade Social - 2022-2023
+/// @author Lemonade Social - 2023
 /// @notice The setup contract of the `GroupMultisig` plugin.
 contract GroupMultisigSetup is PluginSetup {
     /// @notice The address of `GroupMultisig` plugin logic contract to be used in creating proxy contracts.

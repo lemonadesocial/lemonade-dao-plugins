@@ -6,16 +6,18 @@ import {
 } from "@aragon/sdk-client";
 import {
   getNamedTypesFromMetadata,
-  LIVE_CONTRACTS,
   hexToBytes,
-  SupportedVersion,
   GasFeeEstimation,
 } from "@aragon/sdk-client-common";
 import { ethers } from "hardhat";
 
 const client = Client("maticmum");
 
+// Once a DAO created, change this to create a new DAO
+const DAO_ENS = 'lemonade-dao-test';
+
 const multisigSettings = {
+  // This my wallet. Please change to your own
   members: ["0x1522d4A58486DBbAf72dd464D57CC93e1Ec0d85c"],
   votingSettings: {
     minApprovals: 1,
@@ -91,14 +93,14 @@ const INSTALLATION_ABI = [
   const estimatedGas: GasFeeEstimation = await client.estimation.createDao({
     metadataUri,
     plugins: [pluginInstallItem],
-    ensSubdomain: "adenhall3",
+    ensSubdomain: DAO_ENS,
   });
   console.log({ avg: estimatedGas.average, max: estimatedGas.max });
 
   const steps = client.methods.createDao({
     metadataUri,
     plugins: [pluginInstallItem],
-    ensSubdomain: "adenhall3",
+    ensSubdomain: DAO_ENS,
   });
 
   for await (const step of steps) {
