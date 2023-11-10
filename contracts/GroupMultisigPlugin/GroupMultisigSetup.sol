@@ -26,9 +26,11 @@ contract GroupMultisigSetup is PluginSetup {
         address _dao,
         bytes calldata _data
     ) external returns (address plugin, PreparedSetupData memory preparedSetupData) {
-        // Decode `_data` to extract the params needed for deploying and initializing `GroupMultisig` plugin.
-        (Multisig.MultisigSettings memory multisigSettings) = abi
-            .decode(_data, (Multisig.MultisigSettings));
+        // Decode `_data` to extract the params needed for deploying and initializing `Multisig` plugin.
+        (address[] memory members, Multisig.MultisigSettings memory multisigSettings) = abi.decode(
+            _data,
+            (address[], Multisig.MultisigSettings)
+        );
 
         // Prepare and Deploy the plugin proxy.
         plugin = createERC1967Proxy(
@@ -36,6 +38,7 @@ contract GroupMultisigSetup is PluginSetup {
             abi.encodeWithSelector(
                 Multisig.initialize.selector,
                 _dao,
+                members,
                 multisigSettings
             )
         );

@@ -9,7 +9,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "lemonade-communities-test-3";
+  const pluginName = "lemonade-communities-test-5";
   const pluginSetupContractName = "GroupMultisigSetup";
   const { deployer } = await getNamedAccounts();
 

@@ -8,6 +8,8 @@ import '@typechain/hardhat';
 import "hardhat-deploy";
 import "hardhat-gas-reporter"
 import "solidity-coverage";
+import * as tdly from '@tenderly/hardhat-tenderly';
+tdly.setup();
 
 // To find your Alchemy key, go to https://dashboard.alchemy.com/. Infure or any other provider would work here as well.
 const goerliAlchemyKey = process.env.GOERLI_ALCHEMY_KEY;
@@ -28,6 +30,7 @@ module.exports = {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${mumbaiAlchemyKey}`,
       gas: 2000,
       accounts: [privateKey],
+      blockGasLimit: 100000000429720
     },
   },
   // https://github.com/wighawag/hardhat-deploy#1-namedaccounts-ability-to-name-addresses
@@ -54,4 +57,8 @@ module.exports = {
   mocha: {
     timeout: 40000,
   },
+  tenderly: {
+    project: 'lemonade',
+    username: 'james_coderpush'
+  }
 };
