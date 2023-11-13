@@ -25,6 +25,7 @@ contract GroupMultisig is Multisig {
     mapping(uint256 => string) public groupsNames;
     mapping(uint256 => GroupMultisigList) public groups;
     mapping(uint256 => Vault) public groupVault;
+    mapping(uint256 => uint256) public groupProposal;
 
     function createGroup(
         string calldata _groupName,
@@ -75,6 +76,42 @@ contract GroupMultisig is Multisig {
         groups[_groupId].removeAddresses(_members);
 
         emit MembersRemoved({members: _members});
+    }
+
+    
+    /// @notice Creates a new multisig proposal for groups.
+    /// @param _metadata The metadata of the proposal.
+    /// @param _actions The actions that will be executed after the proposal passes.
+    /// @param _allowFailureMap A bitmap allowing the proposal to succeed, even if individual actions might revert. If the bit at index `i` is 1, the proposal succeeds even if the `i`th action reverts. A failure map value of 0 requires every action to not revert.
+    /// @param _approveProposal If `true`, the sender will approve the proposal.
+    /// @param _tryExecution If `true`, execution is tried after the vote cast. The call does not revert if early execution is not possible.
+    /// @param _startDate The start date of the proposal.
+    /// @param _endDate The end date of the proposal.
+    /// @param _groupId The ID of the group.
+    /// @return proposalId The ID of the proposal.
+    function createProposalWithGroup(
+        bytes calldata _metadata,
+        IDAO.Action[] calldata _actions,
+        uint256 _allowFailureMap,
+        bool _approveProposal,
+        bool _tryExecution,
+        uint64 _startDate,
+        uint64 _endDate,
+        uint256 _groupId
+    ) public returns (uint256 proposalId) {
+        require(groups[_groupId].isListed(_msgSender()), "Not a group member");
+
+        proposalId = this.createProposal(
+            _metadata,
+            _actions,
+            _allowFailureMap,
+            _approveProposal,
+            _tryExecution,
+            _startDate,
+            _endDate
+        );
+
+        groupProposal[proposalId] = _groupId;
     }
 
     function isMember(
