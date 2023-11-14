@@ -20,6 +20,7 @@ describe("GroupMultisig", () => {
   let dummyActions: any;
   let dummyMetadata: string;
   let multisigSettings: MultisigSettings;
+  const groupId = 0;
 
   // Setup a DAO
   before(async () => {
@@ -67,6 +68,12 @@ describe("GroupMultisig", () => {
       signers[0].address,
       ethers.utils.id("CREATE_GROUP_PERMISSION")
     );
+
+    await dao.grant(
+      groupMultisig.address,
+      signers[0].address,
+      ethers.utils.id("UPDATE_MULTISIG_SETTINGS_PERMISSION")
+    );
   });
 
   // Initialize the GroupMultisig plugin
@@ -76,7 +83,7 @@ describe("GroupMultisig", () => {
       signers.slice(0, 5).map((s) => s.address),
       multisigSettings
     );
-  })
+  });
 
   it("should deploy the contract", async () => {
     expect(groupMultisig.address).to.not.equal(0);
@@ -93,31 +100,104 @@ describe("GroupMultisig", () => {
     );
 
     // Assert that the group was created successfully
-    const groupId = 0;
     expect(await groupMultisig.groupsNames(groupId)).to.equal(groupName);
   });
 
-  it("should return true if the signer is part of the group", async () => {
-    await groupMultisig.createGroup(
-      "MyGroup",
-      signers.slice(0, 5).map((signer) => signer.address),
-      mockToken.address,
-      0
-    );
+  describe("Members:", () => {
+    it("should return true if the signer is part of the group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 5).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
 
-    expect(await groupMultisig.isMemberInGroup(signers[0].address, 0)).to.be.true;
-    expect(await groupMultisig.isMemberInGroup(signers[1].address, 0)).to.be.true;
+      expect(await groupMultisig.isMemberInGroup(signers[0].address, groupId))
+        .to.be.true;
+      expect(await groupMultisig.isMemberInGroup(signers[1].address, groupId))
+        .to.be.true;
+    });
+
+    it("should return false if the signer is not part of the group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        // Only 3 signers out of 5
+        signers.slice(0, 2).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+
+      // Check signer #4
+      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId))
+        .to.be.false;
+    });
+
+    it("should add members to the group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 1).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+      expect(await groupMultisig.isMemberInGroup(signers[1].address, groupId))
+        .to.be.false;
+
+      await groupMultisig.addAddressesToGroup([signers[1].address], groupId);
+
+      expect(await groupMultisig.isMemberInGroup(signers[1].address, groupId))
+        .to.be.true;
+    });
+
+    it("should remove members from the group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 3).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+      expect(await groupMultisig.isMemberInGroup(signers[1].address, groupId))
+        .to.be.true;
+
+      await groupMultisig.removeAddressesFromGroup(
+        [signers[1].address],
+        groupId
+      );
+
+      expect(await groupMultisig.isMemberInGroup(signers[1].address, groupId))
+        .to.be.false;
+    });
+
+    it("should add members to DAO but not in a group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 5).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+      expect(await groupMultisig.isMemberInGroup(signers[6].address, groupId))
+        .to.be.false;
+      expect(await groupMultisig.isMember(signers[6].address)).to.be.false;
+
+      await groupMultisig.addAddresses([signers[6].address]);
+
+      expect(await groupMultisig.isMember(signers[6].address)).to.be.true;
+      expect(await groupMultisig.isMemberInGroup(signers[6].address, groupId))
+        .to.be.false;
+    });
+
+    it("should remove members from DAO but not in group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 5).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId)).to.be.true
+
+      await groupMultisig.removeAddresses([signers[3].address]);
+
+      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId)).to.be.true
+      expect(await groupMultisig.isMember(signers[3].address)).to.be.false;
+    });
   });
-
-  it("should return false if the signer is not part of the group", async () => {
-    await groupMultisig.createGroup(
-      "MyGroup",
-      // Only 2 signers out of 5
-      signers.slice(0, 2).map((signer) => signer.address),
-      mockToken.address,
-      0
-    );
-
-    expect(await groupMultisig.isMemberInGroup(signers[3].address, 0)).to.be.false;
-  })
 });

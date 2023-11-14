@@ -69,7 +69,7 @@ contract GroupMultisig is Multisig {
 
     /// @notice Removes existing members from the address list.
     /// @param _members The addresses of the members to be removed.
-    function removeAddressesToGroup(
+    function removeAddressesFromGroup(
         address[] calldata _members,
         uint256 _groupId
     ) external auth(UPDATE_ADDRESSES_PERMISSION_ID) {
