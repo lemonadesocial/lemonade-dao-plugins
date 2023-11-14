@@ -99,7 +99,7 @@ contract GroupMultisig is Multisig {
         uint64 _endDate,
         uint256 _groupId
     ) public returns (uint256 proposalId) {
-        require(groups[_groupId].isListed(_msgSender()), "Not a group member");
+        require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
 
         proposalId = this.createProposal(
             _metadata,
@@ -114,7 +114,7 @@ contract GroupMultisig is Multisig {
         groupProposal[proposalId] = _groupId;
     }
 
-    function isMember(
+    function isMemberInGroup(
         address _account,
         uint256 _groupId
     ) public view returns (bool) {
@@ -127,7 +127,7 @@ contract GroupMultisig is Multisig {
         address _destination,
         uint256 _groupId
     ) external {
-        require(isMember(_msgSender(), _groupId), "Not a group member");
+        require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
         groupVault[_groupId].withdrawNFT(_tokenAddress, _tokenId, _destination);
     }
 
@@ -137,7 +137,7 @@ contract GroupMultisig is Multisig {
         address _destination,
         uint256 _groupId
     ) external {
-        require(isMember(_msgSender(), _groupId), "Not a group member");
+        require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
         groupVault[_groupId].withdrawERC20(
             _tokenAddress,
             _amount,
