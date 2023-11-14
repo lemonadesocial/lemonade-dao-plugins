@@ -89,7 +89,7 @@ contract GroupMultisig is Multisig {
     /// @param _endDate The end date of the proposal.
     /// @param _groupId The ID of the group.
     /// @return proposalId The ID of the proposal.
-    function createProposalWithGroup(
+    function createGroupProposal(
         bytes calldata _metadata,
         IDAO.Action[] calldata _actions,
         uint256 _allowFailureMap,
@@ -99,19 +99,64 @@ contract GroupMultisig is Multisig {
         uint64 _endDate,
         uint256 _groupId
     ) public returns (uint256 proposalId) {
-        require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
+        if (multisigSettings.onlyListed) {
+            require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
+        }
 
-        proposalId = this.createProposal(
-            _metadata,
-            _actions,
-            _allowFailureMap,
-            _approveProposal,
-            _tryExecution,
-            _startDate,
-            _endDate
-        );
+        uint64 snapshotBlock;
+        unchecked {
+            snapshotBlock = block.number.toUint64() - 1; // The snapshot block must be mined already to protect the transaction against backrunning transactions causing census changes.
+        }
 
+        // Revert if the settings have been changed in the same block as this proposal should be created in.
+        // This prevents a malicious party from voting with previous addresses and the new settings.
+        if (lastMultisigSettingsChange > snapshotBlock) {
+            revert ProposalCreationForbidden(_msgSender());
+        }
+
+        if (_startDate == 0) {
+            _startDate = block.timestamp.toUint64();
+        } else if (_startDate < block.timestamp.toUint64()) {
+            revert DateOutOfBounds({limit: block.timestamp.toUint64(), actual: _startDate});
+        }
+
+        if (_endDate < _startDate) {
+            revert DateOutOfBounds({limit: _startDate, actual: _endDate});
+        }
+
+        proposalId = _createProposal({
+            _creator: _msgSender(),
+            _metadata: _metadata,
+            _startDate: _startDate,
+            _endDate: _endDate,
+            _actions: _actions,
+            _allowFailureMap: _allowFailureMap
+        });
+
+        // Create the proposal
+        Proposal storage proposal_ = proposals[proposalId];
         groupProposal[proposalId] = _groupId;
+
+        proposal_.parameters.snapshotBlock = snapshotBlock;
+        proposal_.parameters.startDate = _startDate;
+        proposal_.parameters.endDate = _endDate;
+        proposal_.parameters.minApprovals = multisigSettings.minApprovals;
+
+        // Reduce costs
+        if (_allowFailureMap != 0) {
+            proposal_.allowFailureMap = _allowFailureMap;
+        }
+
+        for (uint256 i; i < _actions.length; ) {
+            proposal_.actions.push(_actions[i]);
+            unchecked {
+                ++i;
+            }
+        }
+
+        if (_approveProposal) {
+            approve(proposalId, _tryExecution);
+        }
     }
 
     function isMemberInGroup(

@@ -1,10 +1,10 @@
 import { GroupMultisig } from "../typechain-types/contracts/GroupMultisigPlugin/GroupMultisig";
 import { GroupMultisig__factory } from "../typechain-types/factories/contracts/GroupMultisigPlugin";
 import { deployNewDAO, deployWithProxy } from "./utils";
-import { DAO } from "@aragon/osx-ethers";
+import { DAO, IDAO } from "@aragon/osx-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { Contract } from "ethers";
+import { BytesLike, Contract } from "ethers";
 import { ethers } from "hardhat";
 
 type MultisigSettings = {
@@ -192,12 +192,54 @@ describe("GroupMultisig", () => {
         mockToken.address,
         0
       );
-      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId)).to.be.true
+      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId))
+        .to.be.true;
 
       await groupMultisig.removeAddresses([signers[3].address]);
 
-      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId)).to.be.true
+      expect(await groupMultisig.isMemberInGroup(signers[3].address, groupId))
+        .to.be.true;
       expect(await groupMultisig.isMember(signers[3].address)).to.be.false;
+    });
+  });
+
+  describe("Proposal:", () => {
+    it("should create a new proposal for that group", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 5).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+
+      await groupMultisig.createGroup(
+        "MyGroup2",
+        signers.slice(0, 5).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+
+      const metadata: BytesLike = [];
+      const actions: IDAO.ActionStruct[] = [];
+      const allowFailureMap = 1;
+      const approveProposal = false;
+      const tryExecution = false;
+      const startDate = Date.now();
+      const endDate = startDate + 6000;
+
+      const tx = await groupMultisig.connect(signers[0]).createGroupProposal(
+        metadata,
+        actions,
+        allowFailureMap,
+        approveProposal,
+        tryExecution,
+        startDate,
+        endDate,
+        1, // Second group
+      );
+
+      expect(tx).to.emit(groupMultisig, "ProposalCreated")
+      expect((await groupMultisig.groupProposal(0))).to.equal(1) // Belongs to second group
     });
   });
 });
