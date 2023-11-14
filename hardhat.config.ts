@@ -2,9 +2,10 @@ import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
 import '@nomicfoundation/hardhat-chai-matchers';
-import '@nomicfoundation/hardhat-toolbox';
 import '@nomiclabs/hardhat-etherscan';
 import '@typechain/hardhat';
+import '@openzeppelin/hardhat-upgrades';
+import '@nomicfoundation/hardhat-toolbox';
 import "hardhat-deploy";
 import "hardhat-gas-reporter"
 import "solidity-coverage";
