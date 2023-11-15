@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:sol": "hardhat coverage",
+    "test:sol": "hardhat test",
     "lint:sol": "solhint 'contracts/**/*.sol'",
     "prettier:check": "prettier --check --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:write": "prettier --write --plugin=prettier-plugin-solidity \"**/*.{js,json,md,sol,ts,yml}\"",
