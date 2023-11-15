@@ -9,6 +9,6 @@ contract MockToken is ERC20 {
         string memory symbol,
         uint256 _totalSupply
     ) ERC20(name, symbol) {
-        _mint(msg.sender, _totalSupply);
+        _mint(_msgSender(), _totalSupply);
     }
 }

@@ -80,6 +80,7 @@ contract GroupMultisig is Multisig {
 
     
     /// @notice Creates a new multisig proposal for groups.
+    /// @dev This is copied from Aragon's Multisig.
     /// @param _metadata The metadata of the proposal.
     /// @param _actions The actions that will be executed after the proposal passes.
     /// @param _allowFailureMap A bitmap allowing the proposal to succeed, even if individual actions might revert. If the bit at index `i` is 1, the proposal succeeds even if the `i`th action reverts. A failure map value of 0 requires every action to not revert.

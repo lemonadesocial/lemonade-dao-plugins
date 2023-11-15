@@ -235,11 +235,73 @@ describe("GroupMultisig", () => {
         tryExecution,
         startDate,
         endDate,
-        1, // Second group
+        1 // Second group
       );
 
-      expect(tx).to.emit(groupMultisig, "ProposalCreated")
-      expect((await groupMultisig.groupProposal(0))).to.equal(1) // Belongs to second group
+      expect(tx).to.emit(groupMultisig, "ProposalCreated");
+      expect(await groupMultisig.groupProposal(0)).to.equal(1); // Belongs to second group
+    });
+
+    it("should not create a proposal if not a member", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 2).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+
+      const metadata: BytesLike = [];
+      const actions: IDAO.ActionStruct[] = [];
+      const allowFailureMap = 1;
+      const approveProposal = false;
+      const tryExecution = false;
+      const startDate = Date.now();
+      const endDate = startDate + 6000;
+
+      await expect(
+        groupMultisig
+          .connect(signers[3])
+          .createGroupProposal(
+            metadata,
+            actions,
+            allowFailureMap,
+            approveProposal,
+            tryExecution,
+            startDate,
+            endDate,
+            groupId
+          )
+      ).to.be.reverted;
+    });
+  });
+
+  describe("Vault:", () => {
+    it("should allow only members to withdraw", async () => {
+      const allowedAddress = signers[0].address
+      const destinationAddress = signers[2].address
+
+      await groupMultisig.createGroup(
+        "MyGroup",
+        [allowedAddress],
+        mockToken.address,
+        0
+      );
+
+      const groupVaultAddress = await groupMultisig.getGroupVault(groupId);
+
+      await mockToken.transfer(groupVaultAddress, 100);
+
+      await expect(
+        groupMultisig
+          .connect(signers[1])
+          .withdrawERC20(mockToken.address, 100, destinationAddress, 0)
+      ).to.be.revertedWith("Not a group member");
+
+      await groupMultisig
+        .connect(signers[0])
+        .withdrawERC20(mockToken.address, 100, destinationAddress, 0);
+
+      expect(await mockToken.balanceOf(destinationAddress)).to.be.equals(100);
     });
   });
 });
