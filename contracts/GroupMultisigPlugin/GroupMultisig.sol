@@ -5,12 +5,13 @@ pragma solidity ^0.8.17;
 import {SafeCastUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
 import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
+import {LayerOne} from "../MultiChain/LayerOne.sol";
 import {GroupMultisigList} from "./GroupMultisigList.sol";
 import {Vault} from "./Vault.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract GroupMultisig is Multisig {
+contract GroupMultisig is Multisig, LayerOne {
     using SafeCastUpgradeable for uint256;
     using Counters for Counters.Counter;
 
@@ -78,7 +79,6 @@ contract GroupMultisig is Multisig {
         emit MembersRemoved({members: _members});
     }
 
-    
     /// @notice Creates a new multisig proposal for groups.
     /// @dev This is copied from Aragon's Multisig.
     /// @param _metadata The metadata of the proposal.
@@ -101,7 +101,10 @@ contract GroupMultisig is Multisig {
         uint256 _groupId
     ) public returns (uint256 proposalId) {
         if (multisigSettings.onlyListed) {
-            require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
+            require(
+                isMemberInGroup(_msgSender(), _groupId),
+                "Not a group member"
+            );
         }
 
         uint64 snapshotBlock;
@@ -118,7 +121,10 @@ contract GroupMultisig is Multisig {
         if (_startDate == 0) {
             _startDate = block.timestamp.toUint64();
         } else if (_startDate < block.timestamp.toUint64()) {
-            revert DateOutOfBounds({limit: block.timestamp.toUint64(), actual: _startDate});
+            revert DateOutOfBounds({
+                limit: block.timestamp.toUint64(),
+                actual: _startDate
+            });
         }
 
         if (_endDate < _startDate) {
@@ -142,6 +148,29 @@ contract GroupMultisig is Multisig {
         proposal_.parameters.startDate = _startDate;
         proposal_.parameters.endDate = _endDate;
         proposal_.parameters.minApprovals = multisigSettings.minApprovals;
+
+        // Bridge the proposal over to the L2
+        bytes memory encodedMessage = abi.encode(
+            proposalId,
+            _startDate,
+            _endDate,
+            _tryExecution
+        );
+
+        if (
+            bridgeSettings.bridge != address(0) ||
+            bridgeSettings.chainId != uint16(0) ||
+            address(bridgeSettings.childDAO) != address(0)
+        ) {
+            _lzSend({
+                _dstChainId: bridgeSettings.chainId,
+                _payload: encodedMessage,
+                _refundAddress: payable(msg.sender),
+                _zroPaymentAddress: address(0),
+                _adapterParams: bytes(""),
+                _nativeFee: address(this).balance
+            });
+        }
 
         // Reduce costs
         if (_allowFailureMap != 0) {
@@ -193,5 +222,15 @@ contract GroupMultisig is Multisig {
 
     function getGroupVault(uint256 _groupId) external view returns (address) {
         return address(groupVault[_groupId]);
+    }
+
+    /// @notice TODO: Not implemented
+    function _nonblockingLzReceive(
+        uint16 _srcChainId,
+        bytes memory _srcAddress,
+        uint64 _nonce,
+        bytes memory _payload
+    ) internal virtual override {
+        revert("Not implemented");
     }
 }
