@@ -10,7 +10,7 @@ import {Vault} from "./Vault.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract GroupMultisig is Multisig {
+contract GroupMultisigBase is Multisig {
     using SafeCastUpgradeable for uint256;
     using Counters for Counters.Counter;
 
@@ -78,7 +78,6 @@ contract GroupMultisig is Multisig {
         emit MembersRemoved({members: _members});
     }
 
-    
     /// @notice Creates a new multisig proposal for groups.
     /// @dev This is copied from Aragon's Multisig.
     /// @param _metadata The metadata of the proposal.
@@ -101,7 +100,10 @@ contract GroupMultisig is Multisig {
         uint256 _groupId
     ) public returns (uint256 proposalId) {
         if (multisigSettings.onlyListed) {
-            require(isMemberInGroup(_msgSender(), _groupId), "Not a group member");
+            require(
+                isMemberInGroup(_msgSender(), _groupId),
+                "Not a group member"
+            );
         }
 
         uint64 snapshotBlock;
@@ -118,7 +120,10 @@ contract GroupMultisig is Multisig {
         if (_startDate == 0) {
             _startDate = block.timestamp.toUint64();
         } else if (_startDate < block.timestamp.toUint64()) {
-            revert DateOutOfBounds({limit: block.timestamp.toUint64(), actual: _startDate});
+            revert DateOutOfBounds({
+                limit: block.timestamp.toUint64(),
+                actual: _startDate
+            });
         }
 
         if (_endDate < _startDate) {

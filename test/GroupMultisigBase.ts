@@ -1,5 +1,5 @@
-import { GroupMultisig } from "../typechain-types/contracts/GroupMultisigPlugin/GroupMultisig";
-import { GroupMultisig__factory } from "../typechain-types/factories/contracts/GroupMultisigPlugin";
+import { GroupMultisigBase } from "../typechain-types/contracts/GroupMultisigPlugin/GroupMultisigBase";
+import { GroupMultisigBase__factory } from "../typechain-types/factories/contracts/GroupMultisigPlugin";
 import { deployNewDAO, deployWithProxy } from "./utils";
 import { DAO, IDAO } from "@aragon/osx-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -12,9 +12,9 @@ type MultisigSettings = {
   onlyListed: boolean;
 };
 
-describe("GroupMultisig", () => {
+describe("GroupMultisigBase", () => {
   let signers: SignerWithAddress[];
-  let groupMultisig: GroupMultisig;
+  let groupMultisig: GroupMultisigBase;
   let dao: DAO;
   let mockToken: Contract;
   let dummyActions: any;
@@ -46,7 +46,7 @@ describe("GroupMultisig", () => {
       onlyListed: true,
     };
 
-    const GroupMultisigFactory = new GroupMultisig__factory(signers[0]);
+    const GroupMultisigFactory = new GroupMultisigBase__factory(signers[0]);
     groupMultisig = await deployWithProxy(GroupMultisigFactory);
 
     const MockToken = await ethers.getContractFactory("MockToken");
