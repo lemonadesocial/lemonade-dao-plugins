@@ -5,13 +5,12 @@ pragma solidity ^0.8.17;
 import {SafeCastUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
 import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
-import {LayerOne} from "../MultiChain/LayerOne.sol";
 import {GroupMultisigList} from "./GroupMultisigList.sol";
 import {Vault} from "./Vault.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract GroupMultisig is Multisig, LayerOne {
+contract GroupMultisigBase is Multisig {
     using SafeCastUpgradeable for uint256;
     using Counters for Counters.Counter;
 
@@ -149,29 +148,6 @@ contract GroupMultisig is Multisig, LayerOne {
         proposal_.parameters.endDate = _endDate;
         proposal_.parameters.minApprovals = multisigSettings.minApprovals;
 
-        // Bridge the proposal over to the L2
-        bytes memory encodedMessage = abi.encode(
-            proposalId,
-            _startDate,
-            _endDate,
-            _tryExecution
-        );
-
-        if (
-            bridgeSettings.bridge != address(0) ||
-            bridgeSettings.chainId != uint16(0) ||
-            address(bridgeSettings.childDAO) != address(0)
-        ) {
-            _lzSend({
-                _dstChainId: bridgeSettings.chainId,
-                _payload: encodedMessage,
-                _refundAddress: payable(msg.sender),
-                _zroPaymentAddress: address(0),
-                _adapterParams: bytes(""),
-                _nativeFee: address(this).balance
-            });
-        }
-
         // Reduce costs
         if (_allowFailureMap != 0) {
             proposal_.allowFailureMap = _allowFailureMap;
@@ -222,15 +198,5 @@ contract GroupMultisig is Multisig, LayerOne {
 
     function getGroupVault(uint256 _groupId) external view returns (address) {
         return address(groupVault[_groupId]);
-    }
-
-    /// @notice TODO: Not implemented
-    function _nonblockingLzReceive(
-        uint16 _srcChainId,
-        bytes memory _srcAddress,
-        uint64 _nonce,
-        bytes memory _payload
-    ) internal virtual override {
-        revert("Not implemented");
     }
 }

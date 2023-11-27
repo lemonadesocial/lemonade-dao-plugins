@@ -7,18 +7,18 @@ import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 import {PermissionLib} from "@aragon/osx/core/permission/PermissionLib.sol";
 import {PluginSetup, IPluginSetup} from "@aragon/osx/framework/plugin/setup/PluginSetup.sol";
 import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
-import {GroupMultisig} from "./GroupMultisig.sol";
+import {GroupMultisigBase} from "./GroupMultisigBase.sol";
 
 /// @title GroupMultisigSetup
 /// @author Lemonade Social - 2023
 /// @notice The setup contract of the `GroupMultisig` plugin.
 contract GroupMultisigSetup is PluginSetup {
     /// @notice The address of `GroupMultisig` plugin logic contract to be used in creating proxy contracts.
-    GroupMultisig private immutable groupMultisigBase;
+    GroupMultisigBase private immutable groupMultisigBase;
 
     /// @notice The contract constructor, that deployes the `GroupMultisig` plugin logic contract.
     constructor() {
-        groupMultisigBase = new GroupMultisig();
+        groupMultisigBase = new GroupMultisigBase();
     }
 
     /// @inheritdoc IPluginSetup
