@@ -5,11 +5,8 @@ pragma solidity ^0.8.17;
 import {GroupMultisigBase} from "./GroupMultisigBase.sol";
 import {NonBlockingLzApp} from "../LzApp/NonBlockingLzApp.sol";
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
-import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
 
-/// @notice Upon a proposal creation, L1 sends a message to L2 for L2 to create a proposal
-contract L1GroupMultisig is GroupMultisigBase, NonBlockingLzApp {
-    GroupMultisigBase private immutable groupMultisigBase;
+contract MultiChainGroupMultisig is GroupMultisigBase, NonBlockingLzApp {
 
     /// @notice A container for the multisig bridge settings that will be required when bridging and receiving the proposals from other chains
     /// @param chainID A parameter to select the id of the destination chain
@@ -30,10 +27,6 @@ contract L1GroupMultisig is GroupMultisigBase, NonBlockingLzApp {
     /// @notice The struct storing the bridge settings.
     BridgeSettings public bridgeSettings;
 
-    constructor() {
-        groupMultisigBase = new GroupMultisigBase();
-    }
-
     /// @notice Updates the bridge settings.
     /// @param _bridgeSettings The new voting settings.
     function updateBridgeSettings(
@@ -51,7 +44,7 @@ contract L1GroupMultisig is GroupMultisigBase, NonBlockingLzApp {
         );
     }
 
-    function createProposal(
+    function createMultiChainProposal(
         bytes calldata _metadata,
         IDAO.Action[] calldata _actions,
         uint256 _allowFailureMap,
@@ -59,8 +52,8 @@ contract L1GroupMultisig is GroupMultisigBase, NonBlockingLzApp {
         bool _tryExecution,
         uint64 _startDate,
         uint64 _endDate
-    ) external override returns (uint256 proposalId) {
-        proposalId = groupMultisigBase.createProposal(
+    ) external returns (uint256 proposalId) {
+        proposalId = this.createProposal(
             _metadata,
             _actions,
             _allowFailureMap,
@@ -86,7 +79,7 @@ contract L1GroupMultisig is GroupMultisigBase, NonBlockingLzApp {
             _lzSend({
                 _dstChainId: bridgeSettings.chainId,
                 _payload: encodedMessage,
-                _refundAddress: payable(msg.sender),
+                _refundAddress: payable(_msgSender()),
                 _zroPaymentAddress: address(0),
                 _adapterParams: bytes(""),
                 _nativeFee: address(this).balance
