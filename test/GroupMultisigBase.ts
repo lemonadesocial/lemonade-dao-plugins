@@ -227,7 +227,7 @@ describe("GroupMultisigBase", () => {
       const startDate = Date.now();
       const endDate = startDate + 6000;
 
-      const tx = await groupMultisig.connect(signers[0]).createGroupProposal(
+      const tx = await groupMultisig.connect(signers[0]).createProposal(
         metadata,
         actions,
         allowFailureMap,
@@ -261,7 +261,7 @@ describe("GroupMultisigBase", () => {
       await expect(
         groupMultisig
           .connect(signers[3])
-          .createGroupProposal(
+          .createProposal(
             metadata,
             actions,
             allowFailureMap,
@@ -273,12 +273,94 @@ describe("GroupMultisigBase", () => {
           )
       ).to.be.reverted;
     });
+
+    it("should not approve a proposal if not a member", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 2).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+
+      const metadata: BytesLike = [];
+      const actions: IDAO.ActionStruct[] = [];
+      const allowFailureMap = 1;
+      const approveProposal = false;
+      const tryExecution = false;
+      const startDate = Date.now();
+      const endDate = startDate + 6000;
+
+      await groupMultisig
+        .connect(signers[0])
+        .createProposal(
+          metadata,
+          actions,
+          allowFailureMap,
+          approveProposal,
+          tryExecution,
+          startDate,
+          endDate,
+          groupId
+        );
+
+      expect(
+        await groupMultisig
+          .connect(signers[3])
+          .canApprove(groupMultisig.groupProposal(groupId), signers[3].address)
+      ).to.be.false;
+
+      await expect(
+        groupMultisig
+          .connect(signers[3])
+          .approve(groupMultisig.groupProposal(groupId), false)
+      ).to.be.revertedWithCustomError(groupMultisig, "ApprovalCastForbidden");
+    });
+
+    it("should approve proposal if user is a member", async () => {
+      await groupMultisig.createGroup(
+        "MyGroup",
+        signers.slice(0, 2).map((signer) => signer.address),
+        mockToken.address,
+        0
+      );
+
+      const metadata: BytesLike = [];
+      const actions: IDAO.ActionStruct[] = [];
+      const allowFailureMap = 1;
+      const approveProposal = false;
+      const tryExecution = false;
+      const startDate = Date.now();
+      const endDate = startDate + 6000;
+
+      await groupMultisig
+        .connect(signers[0])
+        .createProposal(
+          metadata,
+          actions,
+          allowFailureMap,
+          approveProposal,
+          tryExecution,
+          startDate,
+          endDate,
+          groupId
+        );
+
+      expect(
+        await groupMultisig
+          .connect(signers[1])
+          .canApprove(groupMultisig.groupProposal(groupId), signers[1].address)
+      ).to.be.true;
+
+      await groupMultisig
+        .connect(signers[1])
+        .approve(groupMultisig.groupProposal(groupId), true);
+    })
   });
 
   describe("Vault:", () => {
     it("should allow only members to withdraw", async () => {
-      const allowedAddress = signers[0].address
-      const destinationAddress = signers[2].address
+      const allowedAddress = signers[0].address;
+      const destinationAddress = signers[2].address;
 
       await groupMultisig.createGroup(
         "MyGroup",

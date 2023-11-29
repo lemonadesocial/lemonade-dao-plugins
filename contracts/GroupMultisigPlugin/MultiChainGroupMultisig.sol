@@ -7,7 +7,6 @@ import {NonBlockingLzApp} from "../LzApp/NonBlockingLzApp.sol";
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
 
 contract MultiChainGroupMultisig is GroupMultisigBase, NonBlockingLzApp {
-
     /// @notice A container for the multisig bridge settings that will be required when bridging and receiving the proposals from other chains
     /// @param chainID A parameter to select the id of the destination chain
     /// @param bridge A parameter to select the address of the bridge you want to interact with
@@ -44,15 +43,16 @@ contract MultiChainGroupMultisig is GroupMultisigBase, NonBlockingLzApp {
         );
     }
 
-    function createMultiChainProposal(
+    function createProposal(
         bytes calldata _metadata,
         IDAO.Action[] calldata _actions,
         uint256 _allowFailureMap,
         bool _approveProposal,
         bool _tryExecution,
         uint64 _startDate,
-        uint64 _endDate
-    ) external returns (uint256 proposalId) {
+        uint64 _endDate,
+        uint256 _groupId
+    ) external override returns (uint256 proposalId) {
         proposalId = this.createProposal(
             _metadata,
             _actions,
@@ -60,7 +60,8 @@ contract MultiChainGroupMultisig is GroupMultisigBase, NonBlockingLzApp {
             _approveProposal,
             _tryExecution,
             _startDate,
-            _endDate
+            _endDate,
+            _groupId
         );
 
         // Bridge the proposal over to the L2
