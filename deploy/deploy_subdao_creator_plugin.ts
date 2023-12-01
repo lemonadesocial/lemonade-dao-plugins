@@ -1,5 +1,5 @@
-import releaseMetadata from "../contracts/GroupMultisigPlugin/release-metadata.json";
-import buildMetadata from "../contracts/GroupMultisigPlugin/build-metadata.json";
+import releaseMetadata from "../contracts/SubDAOCreatorPlugin/release-metadata.json";
+import buildMetadata from "../contracts/SubDAOCreatorPlugin/build-metadata.json";
 import { toHex, uploadToIPFS } from "../utils/ipfs-upload";
 import { PluginRepoFactory__factory } from "@aragon/osx-ethers";
 import { activeContractsList } from "@aragon/osx-ethers";
@@ -9,8 +9,8 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "lemonade-communities-test-5";
-  const pluginSetupContractName = "GroupMultisigSetup";
+  const pluginName = "adenhall-test-2";
+  const pluginSetupContractName = "SubDAOCreatorSetup";
   const { deployer } = await getNamedAccounts();
 
   const deployedSetupContract = await deploy(pluginSetupContractName, {

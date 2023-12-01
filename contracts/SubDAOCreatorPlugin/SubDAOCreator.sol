@@ -12,7 +12,7 @@ import {PluginUUPSUpgradeable} from "@aragon/osx/core/plugin/PluginUUPSUpgradeab
 import {PermissionLib} from "@aragon/osx/core/permission/PermissionLib.sol";
 
 contract SubDAOCreator is PluginUUPSUpgradeable {
-    DAOFactory private immutable _daoFactory;
+    DAOFactory private _daoFactory;
 
     bytes32 public constant CREATE_SUBDAO_PERMISSION_ID =
         keccak256("CREATE_SUBDAO_PERMISSION");
@@ -28,11 +28,11 @@ contract SubDAOCreator is PluginUUPSUpgradeable {
     DAO internal currentDAO;
 
     constructor() {
-        DAORegistry registry = new DAORegistry();
-        PluginRepoRegistry pluginRepoRegistry = new PluginRepoRegistry();
-        PluginSetupProcessor pluginSetupProcessor = new PluginSetupProcessor(pluginRepoRegistry);
+        // TODO: Fix hardcoded mumbai addresses
+        address registry = address(bytes20(bytes("0x6dD0C8b7F9406206ceAA01B5576D9d46e9298f0E")));
+        address pluginSetupProcessor = address(bytes20(bytes("0x9227b311C5cecB416707F1C8B7Ca1b52649AabEc")));
 
-        _daoFactory = new DAOFactory(registry, pluginSetupProcessor);
+        _daoFactory = new DAOFactory(DAORegistry(registry), PluginSetupProcessor(pluginSetupProcessor));
     }
 
     function initialize(DAO _dao) external initializer {
