@@ -18,11 +18,13 @@ contract ParentChildSetup is PluginSetup {
     /// @inheritdoc IPluginSetup
     function prepareInstallation(
         address _dao,
-        bytes calldata
+        bytes calldata _data
     )
         external
         returns (address plugin, PreparedSetupData memory preparedSetupData)
     {
+        (address parentDaoGovPluginAddr) = abi.decode(_data, (address));
+
         plugin = createERC1967Proxy(
             address(parentChildPlugin),
             abi.encodeWithSelector(
@@ -36,10 +38,19 @@ contract ParentChildSetup is PluginSetup {
             memory permissions = new PermissionLib.MultiTargetPermission[](2);
 
         // Grant `EXECUTE_PERMISSION` of the DAO to the plugin.
-        permissions[1] = PermissionLib.MultiTargetPermission(
+        permissions[0] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             _dao,
             plugin,
+            PermissionLib.NO_CONDITION,
+            DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
+        );
+
+        // Grant `EXECUTE_PERMISSION` of the DAO to its parent governance plugin.
+        permissions[1] = PermissionLib.MultiTargetPermission(
+            PermissionLib.Operation.Grant,
+            _dao,
+            parentDaoGovPluginAddr,
             PermissionLib.NO_CONDITION,
             DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
         );
@@ -56,13 +67,23 @@ contract ParentChildSetup is PluginSetup {
         view
         returns (PermissionLib.MultiTargetPermission[] memory permissions)
     {
+        (address parentDaoGovPluginAddr) = abi.decode(_payload.data, (address));
+
         // Prepare permissions
         permissions = new PermissionLib.MultiTargetPermission[](2);
+
+        permissions[0] = PermissionLib.MultiTargetPermission(
+            PermissionLib.Operation.Revoke,
+            _dao,
+            _payload.plugin,
+            PermissionLib.NO_CONDITION,
+            DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
+        );
 
         permissions[1] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _dao,
-            _payload.plugin,
+            parentDaoGovPluginAddr,
             PermissionLib.NO_CONDITION,
             DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
         );
