@@ -62,3 +62,6 @@ export function createPrepareInstallationParams(
     data: data,
   };
 }
+export async function timestampIn(durationInSec: number): Promise<number> {
+  return (await ethers.provider.getBlock('latest')).timestamp + durationInSec;
+}

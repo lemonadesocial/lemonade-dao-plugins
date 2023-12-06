@@ -1,6 +1,6 @@
 import { DAO, IDAO } from "@aragon/osx-ethers";
 import { ethers } from "hardhat";
-import { deployNewDAO, deployWithProxy } from "./utils";
+import { deployNewDAO, deployWithProxy, timestampIn } from "./utils";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   AdminCondition__factory,
@@ -31,12 +31,14 @@ describe("ParentChild", () => {
 
   beforeEach(async () => {
     multisigSettings = {
-      minApprovals: 3,
+      minApprovals: 1,
       onlyListed: true,
     };
 
-    const GroupMultisigFactory = new ParentChildMultisig__factory(signers[0]);
-    parentChildMultisig = await deployWithProxy(GroupMultisigFactory);
+    const ParentChildMultisigFactory = new ParentChildMultisig__factory(
+      signers[0],
+    );
+    parentChildMultisig = await deployWithProxy(ParentChildMultisigFactory);
 
     const AdminConditionFactory = new AdminCondition__factory(signers[0]);
     const adminCondition = await AdminConditionFactory.deploy(
@@ -75,14 +77,14 @@ describe("ParentChild", () => {
     expect(parentChildMultisig.address).to.not.be.undefined;
   });
 
-  it("should allow parent DAO to cancel proposals", async () => {
+  it("should not allow execution if not parent", async () => {
     const metadata: BytesLike = [];
     const actions: IDAO.ActionStruct[] = [];
     const allowFailureMap = 1;
     const approveProposal = false;
     const tryExecution = false;
-    const startDate = Date.now();
-    const endDate = startDate + 6000;
+    const startDate = 0;
+    const endDate = await timestampIn(5000);
 
     const tx = await parentChildMultisig.connect(signers[0])
       .createProposal(
@@ -95,6 +97,13 @@ describe("ParentChild", () => {
         endDate,
       );
 
-    await parentChildMultisig.connect(signers[0]).cancelProposal(tx.value);
+    await parentChildMultisig.connect(signers[0]).approve(
+      tx.value.toNumber(),
+      false,
+    );
+    await expect(
+      parentChildMultisig.connect(signers[0]).execute(0),
+    ).to.be.revertedWithCustomError(childDAO, "Unauthorized");
+    // await parentChildMultisig.connect(parentDAO.address).execute(0);
   });
 });

@@ -17,9 +17,9 @@ contract AdminCondition is PermissionCondition {
         bytes32 _permissionId,
         bytes calldata _data
     ) external view override returns (bool isPermitted) {
-        (_who, _permissionId, _data);
+        (_where, _permissionId, _data);
 
-        if (parentDao == _where) {
+        if (parentDao == _who) {
             isPermitted = true;
         } else {
             isPermitted = false;
