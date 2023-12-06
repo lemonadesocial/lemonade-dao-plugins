@@ -42,13 +42,14 @@ describe("ParentChild", () => {
 
     const AdminConditionFactory = new AdminCondition__factory(signers[0]);
     const adminCondition = await AdminConditionFactory.deploy(
-      parentDAO.address,
+      parentDAO.address
     );
+    const EXECUTE_PERMISSION_ID = ethers.utils.id("EXECUTE_PERMISSION");
 
     await childDAO.grantWithCondition(
       childDAO.address,
       parentChildMultisig.address,
-      ethers.utils.id("EXECUTE_PERMISSION"),
+      EXECUTE_PERMISSION_ID,
       adminCondition.address,
     );
     await childDAO.grant(
@@ -104,6 +105,6 @@ describe("ParentChild", () => {
     await expect(
       parentChildMultisig.connect(signers[0]).execute(0),
     ).to.be.revertedWithCustomError(childDAO, "Unauthorized");
-    // await parentChildMultisig.connect(parentDAO.address).execute(0);
+    await parentChildMultisig.connect(parentDAO.address).execute(0);
   });
 });
