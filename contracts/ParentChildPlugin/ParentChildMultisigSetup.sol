@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.17;
 
-import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
 import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 import {PermissionLib} from "@aragon/osx/core/permission/PermissionLib.sol";
 import {PluginSetup, IPluginSetup} from "@aragon/osx/framework/plugin/setup/PluginSetup.sol";
@@ -11,7 +10,7 @@ import {ParentChildMultisig} from "./ParentChildMultisig.sol";
 import {AdminCondition} from "./permission-conditions/AdminCondition.sol";
 
 contract ParentChildSetup is PluginSetup {
-    ParentChildMultisig private immutable parentChildPlugin;
+    ParentChildMultisig private parentChildPlugin;
 
     constructor() {
         parentChildPlugin = new ParentChildMultisig();
