@@ -3,6 +3,7 @@ import { ethers } from "hardhat";
 import { deployNewDAO, deployWithProxy, timestampIn } from "./utils";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
+    AdminCondition,
   AdminCondition__factory,
   ParentChildMultisig,
   ParentChildMultisig__factory,
@@ -20,6 +21,7 @@ describe("ParentChild", () => {
   let childDAO: DAO;
   let signers: SignerWithAddress[] = [];
   let parentChildMultisig: ParentChildMultisig;
+  let adminCondition: AdminCondition;
   let multisigSettings: MultisigSettings;
 
   // Setup a DAO
@@ -41,10 +43,16 @@ describe("ParentChild", () => {
     parentChildMultisig = await deployWithProxy(ParentChildMultisigFactory);
 
     const AdminConditionFactory = new AdminCondition__factory(signers[0]);
-    const adminCondition = await AdminConditionFactory.deploy(
+    adminCondition = await AdminConditionFactory.deploy(
       parentDAO.address
     );
     const EXECUTE_PERMISSION_ID = ethers.utils.id("EXECUTE_PERMISSION");
+
+    await parentDAO.grant(
+      adminCondition.address,
+      signers[7].address,
+      ethers.utils.id("DENY_PROPOSAL_PERMISSION")
+    )
 
     await childDAO.grantWithCondition(
       childDAO.address,
@@ -65,7 +73,7 @@ describe("ParentChild", () => {
     );
   });
 
-  // Initialize the GroupMultisig plugin
+  // Initialize the plugin
   beforeEach(async () => {
     await parentChildMultisig.initialize(
       childDAO.address,
@@ -78,7 +86,7 @@ describe("ParentChild", () => {
     expect(parentChildMultisig.address).to.not.be.undefined;
   });
 
-  it("should not allow execution if not parent", async () => {
+  it("should not allow execution if parent has denied proposal", async () => {
     const metadata: BytesLike = [];
     const actions: IDAO.ActionStruct[] = [];
     const allowFailureMap = 1;
@@ -102,9 +110,10 @@ describe("ParentChild", () => {
       tx.value.toNumber(),
       false,
     );
+    // await adminCondition.connect(signers[7]).denyProposal(0);
+
     await expect(
       parentChildMultisig.connect(signers[0]).execute(0),
     ).to.be.revertedWithCustomError(childDAO, "Unauthorized");
-    await parentChildMultisig.connect(parentDAO.address).execute(0);
   });
 });
