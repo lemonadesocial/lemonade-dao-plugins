@@ -110,7 +110,8 @@ describe("ParentChild", () => {
       tx.value.toNumber(),
       false,
     );
-    // await adminCondition.connect(signers[7]).denyProposal(0);
+
+    await adminCondition.connect(signers[7]).denyProposal(0);
 
     await expect(
       parentChildMultisig.connect(signers[0]).execute(0),
