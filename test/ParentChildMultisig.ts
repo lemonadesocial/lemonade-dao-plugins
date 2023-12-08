@@ -43,9 +43,8 @@ describe("ParentChild", () => {
     parentChildMultisig = await deployWithProxy(ParentChildMultisigFactory);
 
     const AdminConditionFactory = new AdminCondition__factory(signers[0]);
-    adminCondition = await AdminConditionFactory.deploy(
-      parentDAO.address
-    );
+    adminCondition = await deployWithProxy(AdminConditionFactory);
+
     const EXECUTE_PERMISSION_ID = ethers.utils.id("EXECUTE_PERMISSION");
 
     await parentDAO.grant(
@@ -80,6 +79,8 @@ describe("ParentChild", () => {
       signers.slice(0, 5).map((s) => s.address),
       multisigSettings,
     );
+
+    await adminCondition.initialize(parentDAO.address)
   });
 
   it("should deploy", async () => {

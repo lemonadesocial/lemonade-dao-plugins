@@ -40,9 +40,16 @@ contract ParentChildSetup is PluginSetup {
                 parentChildMultisigSettings
             )
         );
+        AdminCondition adminConditionBase = new AdminCondition();
+        address adminCondition = createERC1967Proxy(
+            address(adminConditionBase),
+            abi.encodeWithSelector(
+                AdminCondition.initialize.selector,
+                _dao
+            )
+        );
 
         // Prepare permissions
-        AdminCondition adminCondition = new AdminCondition(address(_dao));
 
         PermissionLib.MultiTargetPermission[]
             memory permissions = new PermissionLib.MultiTargetPermission[](5);
@@ -70,7 +77,7 @@ contract ParentChildSetup is PluginSetup {
             PermissionLib.Operation.Grant,
             _dao,
             plugin,
-            address(adminCondition),
+            adminCondition,
             DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
         );
 

@@ -3,12 +3,11 @@
 pragma solidity ^0.8.17;
 
 import {PermissionCondition} from "@aragon/osx/core/permission/PermissionCondition.sol";
-import {DaoAuthorizableUpgradeable} from "@aragon/osx/core/plugin/dao-authorizable/DaoAuthorizableUpgradeable.sol";
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
+import {DAO} from "@aragon/osx/core/dao/DAO.sol";
+import {PluginUUPSUpgradeable} from "@aragon/osx/core/plugin/PluginUUPSUpgradeable.sol";
 
-contract AdminCondition is PermissionCondition, DaoAuthorizableUpgradeable {
-    address internal parentDao;
-
+contract AdminCondition is PermissionCondition, PluginUUPSUpgradeable {
     /// @notice The ID of the permission required to deny proposals (adding them to blacklist)
     bytes32 public constant DENY_PROPOSAL_PERMISSION_ID =
         keccak256("DENY_PROPOSAL_PERMISSION");
@@ -16,12 +15,27 @@ contract AdminCondition is PermissionCondition, DaoAuthorizableUpgradeable {
     /// @notice stores a list of denied proposal IDs
     mapping(uint256 => bool) internal proposalIds;
 
-    constructor(address _parentDao) {
-        parentDao = _parentDao;
+    /// @param _dao The IDAO interface of the associated DAO.
+    function initialize(
+        IDAO _dao
+    ) external initializer {
+        __PluginUUPSUpgradeable_init(_dao);
     }
 
-    function denyProposal(uint256 proposalId) external {
+    function denyProposal(uint256 proposalId) external auth(DENY_PROPOSAL_PERMISSION_ID) {
         proposalIds[proposalId] = true;
+    }
+
+    /// @notice Checks if this or the parent contract supports an interface by its ID.
+    /// @param _interfaceId The ID of the interface.
+    /// @return Returns `true` if the interface is supported.
+    function supportsInterface(
+        bytes4 _interfaceId
+    ) public view virtual override(PluginUUPSUpgradeable, PermissionCondition) returns (bool) {
+        return
+            PermissionCondition.supportsInterface(_interfaceId) ||
+            PluginUUPSUpgradeable.supportsInterface(_interfaceId) ||
+            super.supportsInterface(_interfaceId);
     }
 
     /// @notice converts bytes32 to uint256
