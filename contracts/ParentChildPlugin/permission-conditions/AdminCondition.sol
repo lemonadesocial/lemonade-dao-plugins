@@ -40,14 +40,8 @@ contract AdminCondition is PermissionCondition, PluginUUPSUpgradeable {
 
     /// @notice converts bytes32 to uint256
     /// @dev see https://ethereum.stackexchange.com/questions/90629/converting-bytes32-to-uint256-in-solidity
-    function asciiToInteger(bytes32 x) internal pure returns (uint256) {
-        uint256 y;
-        for (uint256 i = 0; i < 32; i++) {
-            uint256 c = (uint256(x) >> (i * 8)) & 0xff;
-            if (48 <= c && c <= 57) y += (c - 48) * 10 ** i;
-            else break;
-        }
-        return y;
+    function bytes32ToUint256(bytes32 x) internal pure returns (uint256) {
+        return uint256(x) & 0xfff;
     }
 
     function isGranted(
@@ -56,11 +50,12 @@ contract AdminCondition is PermissionCondition, PluginUUPSUpgradeable {
         bytes32 _permissionId,
         bytes calldata _data
     ) external view returns (bool) {
-        bytes32 _callId = abi.decode(_data, (bytes32));
+        /// @dev skipping first 4 bytes of _data (Function ID) as we only care about the parameters in `dao.execute()`
+        (bytes32 _callId, IDAO.Action[] memory _actions, uint256 _allowFailureMap) = abi.decode(_data[4:], (bytes32, IDAO.Action[], uint256));
 
-        (_where, _who, _permissionId);
+        (_where, _who, _permissionId, _actions, _allowFailureMap);
 
-        if (proposalIds[asciiToInteger(_callId)]) {
+        if (proposalIds[bytes32ToUint256(_callId)]) {
           return false;
         }
 
