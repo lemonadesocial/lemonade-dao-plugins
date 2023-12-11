@@ -1,0 +1,5 @@
+{
+    "name": "ParentChildMultisigPlugin",
+    "description": "This Multisig Governance plugin makes an independent DAO be a sub-DAO of another DAO",
+    "images": {}
+}

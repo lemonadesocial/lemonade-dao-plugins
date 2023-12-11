@@ -9,11 +9,13 @@ import {Multisig} from "@aragon/osx/plugins/governance/multisig/Multisig.sol";
 import {ParentChildMultisig} from "./ParentChildMultisig.sol";
 import {AdminCondition} from "./permission-conditions/AdminCondition.sol";
 
-contract ParentChildSetup is PluginSetup {
+contract ParentChildMultisigSetup is PluginSetup {
     ParentChildMultisig private parentChildPlugin;
+    AdminCondition private adminConditionBase;
 
     constructor() {
         parentChildPlugin = new ParentChildMultisig();
+        adminConditionBase = new AdminCondition();
     }
 
     /// @inheritdoc IPluginSetup
@@ -40,7 +42,6 @@ contract ParentChildSetup is PluginSetup {
                 parentChildMultisigSettings
             )
         );
-        AdminCondition adminConditionBase = new AdminCondition();
         address adminCondition = createERC1967Proxy(
             address(adminConditionBase),
             abi.encodeWithSelector(
@@ -52,7 +53,7 @@ contract ParentChildSetup is PluginSetup {
         // Prepare permissions
 
         PermissionLib.MultiTargetPermission[]
-            memory permissions = new PermissionLib.MultiTargetPermission[](5);
+            memory permissions = new PermissionLib.MultiTargetPermission[](6);
 
         // Set permissions to be granted.
         // Grant the list of permissions of the plugin to the DAO.
@@ -72,8 +73,17 @@ contract ParentChildSetup is PluginSetup {
             parentChildPlugin.UPGRADE_PLUGIN_PERMISSION_ID()
         );
 
-        // Grant `EXECUTE_PERMISSION` of the DAO to the plugin.
+        // Grant `DENY_PROPOSAL_PERMISSION` of the admin condition plugin to the parent DAO
         permissions[2] = PermissionLib.MultiTargetPermission(
+            PermissionLib.Operation.Grant,
+            plugin,
+            parentDao,
+            PermissionLib.NO_CONDITION,
+            adminConditionBase.DENY_PROPOSAL_PERMISSION_ID()
+        );
+
+        // Grant `EXECUTE_PERMISSION` of the DAO to the plugin.
+        permissions[3] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             _dao,
             plugin,
@@ -82,7 +92,7 @@ contract ParentChildSetup is PluginSetup {
         );
 
         // Grant `ROOT_PERMISSION` of the DAO to the parent DAO
-        permissions[3] = PermissionLib.MultiTargetPermission(
+        permissions[4] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             _dao,
             parentDao,
@@ -91,7 +101,7 @@ contract ParentChildSetup is PluginSetup {
         );
 
         // Revoke `ROOT_PERMISSION` from the DAO
-        permissions[4] = PermissionLib.MultiTargetPermission(
+        permissions[5] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _dao,
             _dao,
@@ -120,7 +130,7 @@ contract ParentChildSetup is PluginSetup {
         (members, parentChildMultisigSettings);
 
         // Prepare permissions
-        permissions = new PermissionLib.MultiTargetPermission[](5);
+        permissions = new PermissionLib.MultiTargetPermission[](6);
 
         // Set permissions to be Revoked.
         permissions[0] = PermissionLib.MultiTargetPermission(
@@ -145,6 +155,14 @@ contract ParentChildSetup is PluginSetup {
             _payload.plugin,
             PermissionLib.NO_CONDITION,
             DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
+        );
+
+        permissions[2] = PermissionLib.MultiTargetPermission(
+            PermissionLib.Operation.Revoke,
+            _payload.plugin,
+            parentDao,
+            PermissionLib.NO_CONDITION,
+            adminConditionBase.DENY_PROPOSAL_PERMISSION_ID()
         );
 
         permissions[3] = PermissionLib.MultiTargetPermission(
