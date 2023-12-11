@@ -1,5 +1,5 @@
-import releaseMetadata from "../contracts/SubDAOCreatorPlugin/release-metadata.json";
-import buildMetadata from "../contracts/SubDAOCreatorPlugin/build-metadata.json";
+import releaseMetadata from "../contracts/ParentChildPlugin/release-metadata.json";
+import buildMetadata from "../contracts/ParentChildPlugin/build-metadata.json";
 import { toHex, uploadToIPFS } from "../utils/ipfs-upload";
 import { PluginRepoFactory__factory } from "@aragon/osx-ethers";
 import { activeContractsList } from "@aragon/osx-ethers";
@@ -9,8 +9,8 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "adenhall-test-2";
-  const pluginSetupContractName = "SubDAOCreatorSetup";
+  const pluginName = "adenhall-test-6";
+  const pluginSetupContractName = "ParentChildMultisigSetup";
   const { deployer } = await getNamedAccounts();
 
   const deployedSetupContract = await deploy(pluginSetupContractName, {

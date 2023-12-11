@@ -50,8 +50,11 @@ contract ParentChildMultisigSetup is PluginSetup {
             )
         );
 
-        // Prepare permissions
+        // Helpers
+        address[] memory helpers = new address[](1);
+        helpers[0] = adminCondition;
 
+        // Prepare permissions
         PermissionLib.MultiTargetPermission[]
             memory permissions = new PermissionLib.MultiTargetPermission[](6);
 
@@ -110,6 +113,7 @@ contract ParentChildMultisigSetup is PluginSetup {
         );
 
         preparedSetupData.permissions = permissions;
+        preparedSetupData.helpers = helpers;
     }
 
     /// @inheritdoc IPluginSetup

@@ -7,12 +7,12 @@ import {
   ParentChildMultisig__factory,
 } from "../typechain-types";
 import { deployNewDAO } from "./utils";
-import { getNamedTypesFromMetadata } from "@aragon/sdk-client-common";
+import { getNamedTypesFromMetadata, PermissionOperationType } from "@aragon/sdk-client-common";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 describe("ParentChildMultisigSetup", () => {
-  const EMPTY_DATA = "0x";
+  const AddressZero = ethers.constants.AddressZero;
   // Permissions
   const UPDATE_MULTISIG_SETTINGS_PERMISSION_ID = ethers.utils.id(
     "UPDATE_MULTISIG_SETTINGS_PERMISSION"
@@ -21,6 +21,8 @@ describe("ParentChildMultisigSetup", () => {
     "UPGRADE_PLUGIN_PERMISSION"
   );
   const EXECUTE_PERMISSION_ID = ethers.utils.id("EXECUTE_PERMISSION");
+  const DENY_PROPOSAL_PERMISSION_ID = ethers.utils.id("DENY_PROPOSAL_PERMISSION");
+  const ROOT_PERMISSION_ID = ethers.utils.id("ROOT_PERMISSION");
 
   let signers: SignerWithAddress[];
   let parentChildMultisigSetup: ParentChildMultisigSetup;
@@ -57,6 +59,73 @@ describe("ParentChildMultisigSetup", () => {
     implementationAddress = await parentChildMultisigSetup.implementation();
   });
 
+  it('returns the plugin, helpers, and permissions', async () => {
+    const nonce = await ethers.provider.getTransactionCount(
+      parentChildMultisigSetup.address
+    );
+    const anticipatedPluginAddress = ethers.utils.getContractAddress({
+      from: parentChildMultisigSetup.address,
+      nonce,
+    });
+
+    const {
+      plugin,
+      preparedSetupData: {helpers, permissions},
+    } = await parentChildMultisigSetup.callStatic.prepareInstallation(
+      targetDao.address,
+      minimum_data
+    );
+    const adminConditionAddr = helpers[0];
+
+    expect(plugin).to.be.equal(anticipatedPluginAddress);
+    expect(helpers.length).to.be.equal(1); // Admin Condition in here
+    expect(permissions.length).to.be.equal(6);
+    expect(permissions).to.deep.equal([
+      [
+        PermissionOperationType.GRANT,
+        plugin,
+        targetDao.address,
+        AddressZero,
+        UPDATE_MULTISIG_SETTINGS_PERMISSION_ID,
+      ],
+      [
+        PermissionOperationType.GRANT,
+        plugin,
+        targetDao.address,
+        AddressZero,
+        UPGRADE_PLUGIN_PERMISSION_ID_ID,
+      ],
+      [
+        PermissionOperationType.GRANT,
+        plugin,
+        parentDao.address,
+        AddressZero,
+        DENY_PROPOSAL_PERMISSION_ID,
+      ],
+      [
+        PermissionOperationType.GRANT,
+        targetDao.address,
+        plugin,
+        adminConditionAddr,
+        EXECUTE_PERMISSION_ID,
+      ],
+      [
+        PermissionOperationType.GRANT,
+        targetDao.address,
+        parentDao.address,
+        AddressZero,
+        ROOT_PERMISSION_ID,
+      ],
+      [
+        PermissionOperationType.REVOKE,
+        targetDao.address,
+        targetDao.address,
+        AddressZero,
+        ROOT_PERMISSION_ID,
+      ]
+    ]);
+  });
+
   it("sets up the plugin", async () => {
     const daoAddress = targetDao.address;
 
@@ -70,8 +139,7 @@ describe("ParentChildMultisigSetup", () => {
 
     await parentChildMultisigSetup.prepareInstallation(daoAddress, minimum_data);
 
-    const factory = new ParentChildMultisig__factory(signers[0]);
-    const parentChildMultisigContract = factory.attach(anticipatedPluginAddress);
+    const parentChildMultisigContract = ParentChildMultisigFactory.attach(anticipatedPluginAddress);
 
     expect(await parentChildMultisigContract.dao()).to.eq(daoAddress);
     expect(await parentChildMultisigContract.addresslistLength()).to.be.eq(1);
