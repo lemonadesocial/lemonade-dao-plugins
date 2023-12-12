@@ -46,7 +46,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             address(adminConditionBase),
             abi.encodeWithSelector(
                 AdminCondition.initialize.selector,
-                _dao
+                plugin
             )
         );
 
@@ -82,7 +82,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             plugin,
             parentDao,
             PermissionLib.NO_CONDITION,
-            adminConditionBase.DENY_PROPOSAL_PERMISSION_ID()
+            parentChildPlugin.DENY_PROPOSAL_PERMISSION_ID()
         );
 
         // Grant `EXECUTE_PERMISSION` of the DAO to the plugin.
@@ -166,7 +166,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             _payload.plugin,
             parentDao,
             PermissionLib.NO_CONDITION,
-            adminConditionBase.DENY_PROPOSAL_PERMISSION_ID()
+            parentChildPlugin.DENY_PROPOSAL_PERMISSION_ID()
         );
 
         permissions[3] = PermissionLib.MultiTargetPermission(

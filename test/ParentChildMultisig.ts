@@ -48,8 +48,8 @@ describe("ParentChild", () => {
     const EXECUTE_PERMISSION_ID = ethers.utils.id("EXECUTE_PERMISSION");
 
     // Parent DAO grants signers #7 permission to deny proposals
-    await parentDAO.grant(
-      adminCondition.address,
+    await childDAO.grant(
+      parentChildMultisig.address,
       signers[7].address,
       ethers.utils.id("DENY_PROPOSAL_PERMISSION")
     );
@@ -81,7 +81,7 @@ describe("ParentChild", () => {
       multisigSettings
     );
 
-    await adminCondition.initialize(parentDAO.address);
+    await adminCondition.initialize(parentChildMultisig.address);
   });
 
   it("should deploy", async () => {
@@ -125,7 +125,7 @@ describe("ParentChild", () => {
     const lastProposalId = 1
     await parentChildMultisig.connect(signers[0]).approve(lastProposalId, false);
 
-    await adminCondition.connect(signers[7]).denyProposal(lastProposalId);
+    await parentChildMultisig.connect(signers[7]).denyProposal(lastProposalId);
 
     await expect(
       parentChildMultisig.connect(signers[0]).execute(lastProposalId)
