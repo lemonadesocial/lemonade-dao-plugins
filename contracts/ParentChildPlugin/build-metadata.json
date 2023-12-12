@@ -1,5 +1,5 @@
 {
-  "ui": "",
+  "ui": {},
   "change": "",
   "pluginSetup": {
     "prepareInstallation": {
@@ -38,7 +38,7 @@
         }
       ]
     },
-    "prepareUpdate": [],
-    "prepareUninstallation": []
+    "prepareUpdate": {},
+    "prepareUninstallation": {}
   }
 }

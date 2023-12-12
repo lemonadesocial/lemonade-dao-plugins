@@ -15,7 +15,9 @@ import { ethers } from "hardhat";
 const client = Client(SupportedNetwork.MUMBAI);
 
 // Once a DAO created, change this to create a new DAO
-const DAO_ENS = 'lemonade-dao-test';
+const DAO_ENS = 'adenhall-subdao-test';
+
+const PARENT_DAO = '0xc3e14b19ef066b0ae36b87fdeab9974b83eff24a';
 
 const multisigSettings = {
   // This my wallet. Please change to your own
@@ -38,6 +40,12 @@ const metadata: DaoMetadata = {
 };
 
 const INSTALLATION_ABI = [
+  {
+    "internalType": "address",
+    "name": "parentDao",
+    "type": "address",
+    "description": "The address of the DAO to be the overruling parent"
+  },
   {
     internalType: "address[]",
     name: "members",
@@ -77,6 +85,7 @@ const INSTALLATION_ABI = [
   const hexBytes = ethers.utils.defaultAbiCoder.encode(
     getNamedTypesFromMetadata(INSTALLATION_ABI),
     [
+      PARENT_DAO,
       multisigSettings.members,
       [
         multisigSettings.votingSettings.onlyListed,
@@ -86,7 +95,9 @@ const INSTALLATION_ABI = [
   );
 
   const pluginInstallItem = {
-    id: "0x6a6f8a6efaaa2c31df1706c20adc9b10e0f57308", // ID of the deployed plugin repo (After doing createPluginRepoWithFirstVersion)
+    // ID of the deployed plugin repo (After doing createPluginRepoWithFirstVersion)
+    // From transaction: https://mumbai.polygonscan.com/tx/0x9796c68a43f3a1aa4b18766e6693cd6a5e1aba427d9f2c6059c3f6f2d2a6aeed
+    id: "0x9fefb6d44e741bdfd4880a3212be2eb508ecc4c3",
     data: hexToBytes(hexBytes),
   };
 

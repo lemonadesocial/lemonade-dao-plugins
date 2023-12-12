@@ -9,7 +9,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "adenhall-test-6";
+  const pluginName = "adenhall-subdao-test";
   const pluginSetupContractName = "ParentChildMultisigSetup";
   const { deployer } = await getNamedAccounts();
 
@@ -55,6 +55,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(
     `You can find the transaction address which published the ${pluginName} Plugin here: ${tx.hash}`
   );
+  console.log("Returned: ", tx.value);
 };
 
 export default func;
