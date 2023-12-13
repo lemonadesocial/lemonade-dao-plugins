@@ -50,10 +50,6 @@ contract ParentChildMultisigSetup is PluginSetup {
             )
         );
 
-        // Helpers
-        address[] memory helpers = new address[](1);
-        helpers[0] = adminCondition;
-
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
             memory permissions = new PermissionLib.MultiTargetPermission[](6);
@@ -76,7 +72,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             parentChildPlugin.UPGRADE_PLUGIN_PERMISSION_ID()
         );
 
-        // Grant `DENY_PROPOSAL_PERMISSION` of the admin condition plugin to the parent DAO
+        // Grant `DENY_PROPOSAL_PERMISSION` of the plugin to the parent DAO
         permissions[2] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             plugin,
@@ -113,7 +109,6 @@ contract ParentChildMultisigSetup is PluginSetup {
         );
 
         preparedSetupData.permissions = permissions;
-        preparedSetupData.helpers = helpers;
     }
 
     /// @inheritdoc IPluginSetup
