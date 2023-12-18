@@ -5,7 +5,8 @@ import {
   ParentChildMultisig__factory,
 } from "../typechain-types";
 import { deployNewDAO, deployWithProxy, timestampIn } from "./utils";
-import { DAO, IDAO } from "@aragon/osx-ethers";
+import { DAO, IDAO, Multisig, Multisig__factory } from "@aragon/osx-ethers";
+import { hexToBytes } from "@aragon/sdk-client-common";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BytesLike } from "ethers";
@@ -21,13 +22,14 @@ describe("ParentChild", () => {
   let childDAO: DAO;
   let signers: SignerWithAddress[] = [];
   let parentChildMultisig: ParentChildMultisig;
+  let multisig: Multisig;
   let adminCondition: AdminCondition;
   let multisigSettings: MultisigSettings;
 
   // Setup a DAO
   before(async () => {
     signers = await ethers.getSigners();
-    parentDAO = await deployNewDAO(signers[0]);
+    parentDAO = await deployNewDAO(signers[7]);
     childDAO = await deployNewDAO(signers[0]);
   });
 
@@ -38,39 +40,36 @@ describe("ParentChild", () => {
     };
 
     const ParentChildMultisigFactory = new ParentChildMultisig__factory(
-      signers[0]
+      signers[0],
     );
     parentChildMultisig = await deployWithProxy(ParentChildMultisigFactory);
 
     const AdminConditionFactory = new AdminCondition__factory(signers[0]);
     adminCondition = await deployWithProxy(AdminConditionFactory);
 
+    const multisigFactory = new ParentChildMultisig__factory(signers[7])
+    multisig = await deployWithProxy(multisigFactory);
+
     const EXECUTE_PERMISSION_ID = ethers.utils.id("EXECUTE_PERMISSION");
 
-    // Parent DAO grants signers #7 permission to deny proposals
     await childDAO.grant(
       parentChildMultisig.address,
-      signers[7].address,
-      ethers.utils.id("DENY_PROPOSAL_PERMISSION")
+      parentDAO.address,
+      ethers.utils.id("DENY_PROPOSAL_PERMISSION"),
     );
 
     await childDAO.grantWithCondition(
       childDAO.address,
       parentChildMultisig.address,
       EXECUTE_PERMISSION_ID,
-      adminCondition.address
-    );
-    await childDAO.grant(
-      parentChildMultisig.address,
-      signers[0].address,
-      ethers.utils.id("UPDATE_ADDRESSES_PERMISSION")
+      adminCondition.address,
     );
 
-    await childDAO.grant(
-      parentChildMultisig.address,
-      signers[0].address,
-      ethers.utils.id("UPDATE_MULTISIG_SETTINGS_PERMISSION")
-    );
+    await parentDAO.grant(
+      parentDAO.address,
+      multisig.address,
+      ethers.utils.id("EXECUTE_PERMISSION"),
+    )
   });
 
   // Initialize the plugin
@@ -78,8 +77,14 @@ describe("ParentChild", () => {
     await parentChildMultisig.initialize(
       childDAO.address,
       signers.slice(0, 5).map((s) => s.address),
-      multisigSettings
+      multisigSettings,
     );
+
+    await multisig.initialize(
+      parentDAO.address,
+      signers.slice(6, 8).map((s) => s.address),
+      multisigSettings
+    )
 
     await adminCondition.initialize(parentChildMultisig.address);
   });
@@ -97,7 +102,6 @@ describe("ParentChild", () => {
     const startDate = 0;
     const endDate = await timestampIn(5000);
 
-    // Create 2 proposals
     await parentChildMultisig
       .connect(signers[0])
       .createProposal(
@@ -107,28 +111,38 @@ describe("ParentChild", () => {
         approveProposal,
         tryExecution,
         startDate,
-        endDate
+        endDate,
       );
-    await parentChildMultisig
-      .connect(signers[0])
+
+    const parentChildInterface = ParentChildMultisig__factory.createInterface();
+
+    const hexBytes = parentChildInterface.encodeFunctionData(
+      "denyProposal",
+      [0],
+    );
+
+    await multisig
+      .connect(signers[7])
       .createProposal(
         metadata,
-        actions,
+        [{
+          data: hexToBytes(hexBytes),
+          value: BigInt(0),
+          to: parentChildMultisig.address, // Child's plugin
+        }],
         allowFailureMap,
         approveProposal,
         tryExecution,
         startDate,
-        endDate
+        endDate,
       );
 
-    // Approve and execute the latest proposal
-    const lastProposalId = 1
-    await parentChildMultisig.connect(signers[0]).approve(lastProposalId, false);
+    await multisig.connect(signers[7]).approve(0, true);
 
-    await parentChildMultisig.connect(signers[7]).denyProposal(lastProposalId);
+    expect(await parentChildMultisig.connect(signers[0]).deniedProposals(0)).to.be.true
 
     await expect(
-      parentChildMultisig.connect(signers[0]).execute(lastProposalId)
+      parentChildMultisig.connect(signers[0]).approve(0, true),
     ).to.be.revertedWithCustomError(childDAO, "Unauthorized");
   });
 });
