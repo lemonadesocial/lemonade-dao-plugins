@@ -102,6 +102,7 @@ describe("ParentChild", () => {
     const startDate = 0;
     const endDate = await timestampIn(5000);
 
+    // Child DAO creates a proposal
     await parentChildMultisig
       .connect(signers[0])
       .createProposal(
@@ -114,13 +115,12 @@ describe("ParentChild", () => {
         endDate,
       );
 
+    // Parent DAO creates a proposal to deny Child DAO's
     const parentChildInterface = ParentChildMultisig__factory.createInterface();
-
     const hexBytes = parentChildInterface.encodeFunctionData(
       "denyProposal",
       [0],
     );
-
     await multisig
       .connect(signers[7])
       .createProposal(
@@ -136,11 +136,9 @@ describe("ParentChild", () => {
         startDate,
         endDate,
       );
-
     await multisig.connect(signers[7]).approve(0, true);
 
     expect(await parentChildMultisig.connect(signers[0]).deniedProposals(0)).to.be.true
-
     await expect(
       parentChildMultisig.connect(signers[0]).approve(0, true),
     ).to.be.revertedWithCustomError(childDAO, "Unauthorized");

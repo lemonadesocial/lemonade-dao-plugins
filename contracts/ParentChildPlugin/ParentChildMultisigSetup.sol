@@ -156,7 +156,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
         );
 
-        permissions[2] = PermissionLib.MultiTargetPermission(
+        permissions[3] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _payload.plugin,
             parentDao,
@@ -164,7 +164,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             parentChildPlugin.DENY_PROPOSAL_PERMISSION_ID()
         );
 
-        permissions[3] = PermissionLib.MultiTargetPermission(
+        permissions[4] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _dao,
             parentDao,
@@ -172,7 +172,7 @@ contract ParentChildMultisigSetup is PluginSetup {
             DAO(payable(_dao)).ROOT_PERMISSION_ID()
         );
 
-        permissions[4] = PermissionLib.MultiTargetPermission(
+        permissions[5] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             _dao,
             _dao,
