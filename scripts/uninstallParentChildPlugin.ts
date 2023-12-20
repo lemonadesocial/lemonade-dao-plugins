@@ -19,10 +19,8 @@ const prepareUninstallationParams: PrepareUninstallationParams = {
   pluginAddress,
   uninstallationParams: [
     "0x3285ef3ab8069a85ce73a3f3576deddd95a901e3", // parent DAO
-    [],
-    [1, true],
   ],
-  uninstallationAbi: ["address", "address[]", "tuple(uint16,bool)"],
+  uninstallationAbi: ["address"],
 };
 
 const proposalMetadata = {
