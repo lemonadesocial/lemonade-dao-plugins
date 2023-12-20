@@ -1,0 +1,20 @@
+{
+  "name": "new-dao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "@nomicfoundation/hardhat-toolbox-viem": "^2.0.0",
+    "ethers": "^6.9.0",
+    "hardhat": "^2.19.3"
+  },
+  "dependencies": {
+    "@aragon/osx": "^1.3.0"
+  }
+}
