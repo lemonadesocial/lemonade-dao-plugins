@@ -120,13 +120,7 @@ contract ParentChildMultisigSetup is PluginSetup {
         view
         returns (PermissionLib.MultiTargetPermission[] memory permissions)
     {
-        (
-            address parentDao,
-            address[] memory members,
-            ParentChildMultisig.MultisigSettings
-                memory parentChildMultisigSettings
-        ) = abi.decode(_payload.data, (address, address[], Multisig.MultisigSettings));
-        (members, parentChildMultisigSettings);
+        (address parentDao) = abi.decode(_payload.data, (address));
 
         // Prepare permissions
         permissions = new PermissionLib.MultiTargetPermission[](6);
