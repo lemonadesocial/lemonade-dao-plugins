@@ -9,13 +9,14 @@ import {PluginSetup} from "@aragon/osx/framework/plugin/setup/PluginSetup.sol";
 import {ParentChildPlugin} from "./ParentChildPlugin.sol";
 import {ExecutionCondition} from "./ExecutionCondition.sol";
 
-contract ParentChildMultisigSetup is PluginSetup {
+contract ParentChildPluginSetup is PluginSetup {
     /// @inheritdoc IPluginSetup
     function prepareInstallation(
         address _dao,
         bytes calldata _data
     )
-        external
+        public
+        virtual
         returns (address plugin, PreparedSetupData memory preparedSetupData)
     {
         address[] memory _plugins = abi.decode(_data, (address[]));
@@ -120,8 +121,8 @@ contract ParentChildMultisigSetup is PluginSetup {
         address _dao,
         SetupPayload calldata _payload
     )
-        external
-        view
+        public
+        virtual
         returns (PermissionLib.MultiTargetPermission[] memory permissions)
     {
         DAO dao = DAO(payable(_dao));
