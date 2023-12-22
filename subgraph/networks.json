@@ -1,0 +1,12 @@
+{
+  "mumbai": {
+    "ParentChildPlugin": {
+      "startBlock": 43585773
+    }
+  },
+  "goerli": {
+    "ParentChildPlugin": {
+      "startBlock": 43585773
+    }
+  }
+}

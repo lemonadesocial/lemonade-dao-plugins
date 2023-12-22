@@ -1,0 +1,32 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ParentChildPlugin
+    network: mumbai
+    source:
+      abi: ParentChildPlugin
+      startBlock: 43585773
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ProposalIntervened
+        - ParentSet
+        - ParentUnset
+        - Deactivated
+      abis:
+        - name: ParentChildPlugin
+          file: ./abis/ParentChildPlugin.json
+      eventHandlers:
+        - event: ProposalIntervened(bytes32,bool)
+          handler: handleProposalIntervened
+        - event: ParentSet(address,address,bool)
+          handler: handleParentSet
+        - event: ParentUnset(address,address)
+          handler: handleParentUnset
+        - event: Deactivated()
+          handler: handleDeactivated
+      file: ./src/parent-child-plugin.ts

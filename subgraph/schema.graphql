@@ -1,0 +1,33 @@
+type ProposalIntervened @entity(immutable: true) {
+  id: Bytes!
+  proposalId: Bytes!
+  rejected: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type ParentSet @entity(immutable: true) {
+  id: Bytes!
+  parent: Bytes! # address
+  child: Bytes! # address
+  hardLink: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ParentUnset @entity(immutable: true) {
+  id: Bytes!
+  parent: Bytes! # address
+  child: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Deactivated @entity(immutable: true) {
+  id: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
