@@ -31,3 +31,9 @@ type Deactivated @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
+type Dao @entity {
+  id: Bytes! # address
+  parent: Bytes # address
+}
+
