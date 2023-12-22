@@ -1,5 +1,5 @@
-import {ContractFactory, Signer} from "ethers";
-import {ethers, upgrades} from "hardhat";
+import { ContractFactory, Signer } from "ethers";
+import { ethers, upgrades } from "hardhat";
 
 import {
   DAO,
@@ -14,6 +14,9 @@ type DeployOptions = {
 };
 
 export const daoExampleURI = "https://example.com";
+
+export const bigintToBytes32 = (value: bigint) =>
+  "0x" + value.toString(16).padStart(64, "0");
 
 // Used to deploy the implementation with the ERC1967 Proxy behind it.
 // It is designed this way, because it might be desirable to avoid the OpenZeppelin upgrades package.
@@ -47,10 +50,13 @@ export async function deployNewDAOWithMultisig(signer: Signer) {
     signer.getAddress(),
   ]);
 
-  const [daoAddress, rootPermissionId] = await Promise.all([
-    dao.getAddress(),
-    dao.ROOT_PERMISSION_ID(),
-  ]);
+  const [daoAddress, multisigAddress, rootPermissionId, executePermissioniId] =
+    await Promise.all([
+      dao.getAddress(),
+      multisig.getAddress(),
+      dao.ROOT_PERMISSION_ID(),
+      dao.EXECUTE_PERMISSION_ID(),
+    ]);
 
   //-- init the dao with initialOwner
   await dao.initialize("0x", initialOwner, ethers.ZeroAddress, daoExampleURI);
@@ -60,8 +66,11 @@ export async function deployNewDAOWithMultisig(signer: Signer) {
     onlyListed: true,
   });
 
+  //-- grant execution permission to the multisig
+  await dao.grant(daoAddress, multisigAddress, executePermissioniId);
+
   //-- grant root permission to the dao, keep root permission with signer so it is able to install plugin
   await dao.grant(daoAddress, daoAddress, rootPermissionId);
 
-  return {dao, multisig};
+  return { dao, multisig };
 }
