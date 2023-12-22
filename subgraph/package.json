@@ -1,6 +1,6 @@
 {
-  "name": "test",
-  "license": "UNLICENSED",
+  "name": "subgraph",
+  "license": "ISC",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
