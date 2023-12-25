@@ -9,8 +9,8 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "adenhall-subdao-test";
-  const pluginSetupContractName = "ParentChildMultisigSetup";
+  const pluginName = "adenhall-subdao-test-18";
+  const pluginSetupContractName = "ParentChildPluginSetup";
   const { deployer } = await getNamedAccounts();
 
   const deployedSetupContract = await deploy(pluginSetupContractName, {
