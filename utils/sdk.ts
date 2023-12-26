@@ -37,13 +37,6 @@ const getContextParams = (network: AllowedNetwork): ContextParams => {
                 headers: { "X-API-KEY": IPFS_API_KEY || "" },
             },
         ],
-        // Optional. By default it will use Aragon's provided endpoints.
-        // They will switch depending on the network (production, development)
-        graphqlNodes: [
-            {
-                url: "https://subgraph.satsuma-prod.com/qHR2wGfc5RLi6/aragon/osx-mumbai/api",
-            },
-        ],
     }
 }
 
