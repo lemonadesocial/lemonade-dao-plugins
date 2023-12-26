@@ -12,14 +12,14 @@ import { ApproveProposalStep, ProposalCreationSteps } from "@aragon/sdk-client";
 // Instantiate the general purpose client from the Aragon OSx SDK context.
 const client = Client(SupportedNetwork.MUMBAI);
 const multisigClient = MultisigClient(SupportedNetwork.MUMBAI);
-const daoAddressOrEns: string = "0xf5802b3baf4c5bbe41453e5fc6c67776ce50fa38"; // child DAO
-const pluginAddress = "0xe4056e8ec625A0aa890816F48Db69dEA5838759D"; // Child DAO governance plugin
+const daoAddressOrEns: string = "0xe4678403ad47c36202249756551bd1710369c009"; // child DAO
+const pluginAddress = "0x7eB9AF9cBe2aC13cE5C5c33552ECD4Fbb5Dc4c47"; // Child DAO governance plugin
 
 const installationAbi = buildMetadata.pluginSetup.prepareInstallation.inputs;
 
 const prepareInstallationParams: PrepareInstallationParams = {
   daoAddressOrEns,
-  pluginRepo: "0xa266a624AbD43f5f2A804994EeCC2482F01435b5", // Parent Child Plugin setup repo
+  pluginRepo: "0x08e1B55c6417CfA6Fd9ED71bAD6Ddd19596F9753", // Parent Child Plugin setup repo
   installationParams: [
     [pluginAddress], // Child DAO plugins
   ],

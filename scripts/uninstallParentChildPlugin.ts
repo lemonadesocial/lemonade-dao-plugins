@@ -14,10 +14,11 @@ import {
 const client = Client(SupportedNetwork.MUMBAI);
 const multisigClient = MultisigClient(SupportedNetwork.MUMBAI);
 
-const daoAddressOrEns = "0xf5802b3baf4c5bbe41453e5fc6c67776ce50fa38"; // Child DAO
-const pluginAddress = "0x27Bc4997cDEee7666a9e828380Ed826f128F443e"; // Parent Child Plugin
+const daoAddressOrEns = "0xe4678403ad47c36202249756551bd1710369c009"; // Child DAO
+const pluginAddress = "0x8f785938f7B612B6353dec648Fbb3651743B9059"; // Parent Child Plugin
+const governancePluginAddress = "0x7eB9AF9cBe2aC13cE5C5c33552ECD4Fbb5Dc4c47"
 
-const pluginSetupRepo = "0xa266a624AbD43f5f2A804994EeCC2482F01435b5";
+const pluginSetupRepo = "0x08e1B55c6417CfA6Fd9ED71bAD6Ddd19596F9753";
 
 const proposalMetadata = {
   title: "Uninstall Parent Child Proposal",
@@ -126,7 +127,7 @@ const approveAndExecuteProposal = async (proposalId: string) => {
 
   const proposalSteps = multisigClient.methods.createProposal({
     actions,
-    pluginAddress,
+    pluginAddress: governancePluginAddress,
     metadataUri,
     startDate: new Date(Date.now() + 36000),
     endDate: new Date("1-2-2024"),

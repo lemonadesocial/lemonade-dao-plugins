@@ -38,7 +38,7 @@ contract ParentChildPluginSetup is PluginSetup {
 
         PermissionLib.MultiTargetPermission[]
             memory permissions = new PermissionLib.MultiTargetPermission[](
-                4 + _pluginsLength * 2
+                3 + _pluginsLength * 2
             );
 
         //-- grant root permission to plugin
@@ -52,19 +52,8 @@ contract ParentChildPluginSetup is PluginSetup {
             )
         );
 
-        //-- revoke root permission from DAO
-        permissions[1] = (
-            PermissionLib.MultiTargetPermission(
-                PermissionLib.Operation.Revoke,
-                _dao,
-                _dao,
-                PermissionLib.NO_CONDITION,
-                dao.ROOT_PERMISSION_ID()
-            )
-        );
-
         //-- grant setParent permission to DAO
-        permissions[2] = (
+        permissions[1] = (
             PermissionLib.MultiTargetPermission(
                 PermissionLib.Operation.Grant,
                 plugin,
@@ -75,7 +64,7 @@ contract ParentChildPluginSetup is PluginSetup {
         );
 
         //-- grant deactivate permission to DAO
-        permissions[3] = (
+        permissions[2] = (
             PermissionLib.MultiTargetPermission(
                 PermissionLib.Operation.Grant,
                 plugin,
@@ -88,7 +77,7 @@ contract ParentChildPluginSetup is PluginSetup {
         for (uint256 i; i < _pluginsLength; ) {
             address _otherPlugin = _plugins[i];
 
-            permissions[4 + i * 2] = (
+            permissions[3 + i * 2] = (
                 PermissionLib.MultiTargetPermission(
                     PermissionLib.Operation.Revoke,
                     _dao,
@@ -98,7 +87,7 @@ contract ParentChildPluginSetup is PluginSetup {
                 )
             );
 
-            permissions[5 + i * 2] = (
+            permissions[4 + i * 2] = (
                 PermissionLib.MultiTargetPermission(
                     PermissionLib.Operation.GrantWithCondition,
                     _dao,

@@ -1,33 +1,14 @@
 import { ApproveProposalStep, ProposalCreationSteps } from "@aragon/sdk-client";
 import { hexToBytes, SupportedNetwork } from "@aragon/sdk-client-common";
 import { ParentChildPlugin__factory } from "../typechain-types";
-import { Client, MultisigClient } from "../utils/sdk";
+import { MultisigClient } from "../utils/sdk";
 
-const client = Client(SupportedNetwork.MUMBAI);
 const multisigClient = MultisigClient(SupportedNetwork.MUMBAI);
-const daoAddressOrEns = "0xe4678403ad47c36202249756551bd1710369c009";
 const pluginAddress = "0x8f785938f7B612B6353dec648Fbb3651743B9059"; // Parent Child Plugin
-const setParentABI = [
-  {
-    "internalType": "address",
-    "name": "_newParent",
-    "type": "address",
-    "description": "The address of the new parent",
-  },
-  {
-    "internalType": "bool",
-    "name": "_hardlink",
-    "type": "bool",
-    "description": "Whether to hardlink the plugin or not",
-  },
-];
 const parenChildPluginInterface = ParentChildPlugin__factory.createInterface();
-const hexBytes = parenChildPluginInterface.encodeFunctionData("setParent", [
-  "0xa25865885bf19f502c24a77fcadb547279b14fbf",
-  false, // Hardlink
-]);
+const hexBytes = parenChildPluginInterface.encodeFunctionData("deactivate");
 const proposalMetadata = {
-  title: "Set Parent Proposal",
+  title: "Deactivate Parent Child Plugin Proposal",
   summary: "This is a short description",
   description: "This is a long description",
   resources: [
@@ -50,7 +31,7 @@ const createProposal = async () => {
     proposalMetadata,
   );
   // const dao = await client.methods.getDao(daoAddressOrEns);
-  const governancePlugin = "0x7eB9AF9cBe2aC13cE5C5c33552ECD4Fbb5Dc4c47"
+  const governancePlugin = "0x7eB9AF9cBe2aC13cE5C5c33552ECD4Fbb5Dc4c47" // Governance plugin
 
   const steps = multisigClient.methods.createProposal({
     metadataUri,

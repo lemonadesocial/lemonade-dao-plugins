@@ -71,19 +71,10 @@ contract ParentChildPlugin is Plugin {
         DAO dao = DAO(payable(_dao));
 
         PermissionLib.MultiTargetPermission[]
-            memory permissions = new PermissionLib.MultiTargetPermission[](2);
-
-        //-- grant root permission back to child dao
-        permissions[0] = PermissionLib.MultiTargetPermission(
-            PermissionLib.Operation.Grant,
-            _dao,
-            _dao,
-            PermissionLib.NO_CONDITION,
-            dao.ROOT_PERMISSION_ID()
-        );
+            memory permissions = new PermissionLib.MultiTargetPermission[](1);
 
         //-- revoke root permission from plugin
-        permissions[1] = PermissionLib.MultiTargetPermission(
+        permissions[0] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _dao,
             _this,
@@ -129,13 +120,22 @@ contract ParentChildPlugin is Plugin {
         parent = address(0);
 
         PermissionLib.MultiTargetPermission[]
-            memory permissions = new PermissionLib.MultiTargetPermission[](3);
+            memory permissions = new PermissionLib.MultiTargetPermission[](4);
 
         address _this = address(this);
         address _dao = address(dao());
 
-        //-- revoke child dao to call unsetParent on plugin
+        //-- return ROOT_PERMISSION to the DAO
         permissions[0] = PermissionLib.MultiTargetPermission(
+            PermissionLib.Operation.Grant,
+            _dao,
+            _dao,
+            PermissionLib.NO_CONDITION,
+            DAO(payable(_dao)).ROOT_PERMISSION_ID()
+        );
+
+        //-- revoke child dao to call unsetParent on plugin
+        permissions[1] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _this,
             _dao,
@@ -144,7 +144,7 @@ contract ParentChildPlugin is Plugin {
         );
 
         //-- revoke parentDao to call intervene on plugin
-        permissions[1] = PermissionLib.MultiTargetPermission(
+        permissions[2] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _this,
             _parent,
@@ -153,7 +153,7 @@ contract ParentChildPlugin is Plugin {
         );
 
         //-- revoke parentDao to call unsetParent on plugin
-        permissions[2] = PermissionLib.MultiTargetPermission(
+        permissions[3] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Revoke,
             _this,
             _parent,
@@ -168,13 +168,22 @@ contract ParentChildPlugin is Plugin {
 
     function _setParent(address _newParent, bool _hardLink) internal {
         PermissionLib.MultiTargetPermission[]
-            memory permissions = new PermissionLib.MultiTargetPermission[](3);
+            memory permissions = new PermissionLib.MultiTargetPermission[](4);
 
         address _this = address(this);
         address _dao = address(dao());
 
-        //-- grant parentDao to call unsetParent on plugin
+        //-- revoke ROOT_PERMISSION from the DAO
         permissions[0] = PermissionLib.MultiTargetPermission(
+            PermissionLib.Operation.Revoke,
+            _dao,
+            _dao,
+            PermissionLib.NO_CONDITION,
+            DAO(payable(_dao)).ROOT_PERMISSION_ID()
+        );
+
+        //-- grant parentDao to call unsetParent on plugin
+        permissions[1] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             _this,
             _newParent,
@@ -183,7 +192,7 @@ contract ParentChildPlugin is Plugin {
         );
 
         //-- grant parentDao to call intervene on plugin
-        permissions[1] = PermissionLib.MultiTargetPermission(
+        permissions[2] = PermissionLib.MultiTargetPermission(
             PermissionLib.Operation.Grant,
             _this,
             _newParent,
@@ -192,7 +201,7 @@ contract ParentChildPlugin is Plugin {
         );
 
         //-- if not _hardLink then grant child dao to call unsetParent on plugin
-        permissions[2] = PermissionLib.MultiTargetPermission(
+        permissions[3] = PermissionLib.MultiTargetPermission(
             _hardLink
                 ? PermissionLib.Operation.Revoke
                 : PermissionLib.Operation.Grant,
