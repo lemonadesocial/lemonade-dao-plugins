@@ -1,6 +1,6 @@
 import { DAO, DAO__factory } from "../typechain-types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ContractFactory } from "ethers";
+import { BytesLike, ContractFactory } from "ethers";
 import { ethers, upgrades } from "hardhat";
 
 type DeployOptions = {
@@ -44,4 +44,24 @@ export async function deployNewDAO(signer: SignerWithAddress): Promise<DAO> {
   );
 
   return dao;
+}
+
+export type PluginRepoPointer = [string, number, number];
+export function createPrepareInstallationParams(
+  pluginRepoPointer: PluginRepoPointer,
+  data: BytesLike
+) {
+  return {
+    pluginSetupRef: {
+      pluginSetupRepo: pluginRepoPointer[0],
+      versionTag: {
+        release: pluginRepoPointer[1],
+        build: pluginRepoPointer[2],
+      },
+    },
+    data: data,
+  };
+}
+export async function timestampIn(durationInSec: number): Promise<number> {
+  return (await ethers.provider.getBlock('latest')).timestamp + durationInSec;
 }

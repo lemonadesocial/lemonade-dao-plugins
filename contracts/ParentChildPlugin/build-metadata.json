@@ -1,0 +1,18 @@
+{
+  "ui": {},
+  "change": "",
+  "pluginSetup": {
+    "prepareInstallation": {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "members",
+          "type": "address[]",
+          "description": "The addresses of the other plugins."
+        }
+      ]
+    },
+    "prepareUpdate": {},
+    "prepareUninstallation": {}
+  }
+}

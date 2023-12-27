@@ -1,5 +1,5 @@
-import releaseMetadata from "../contracts/GroupMultisigPlugin/release-metadata.json";
-import buildMetadata from "../contracts/GroupMultisigPlugin/build-metadata.json";
+import releaseMetadata from "../contracts/ParentChildPlugin/release-metadata.json";
+import buildMetadata from "../contracts/ParentChildPlugin/build-metadata.json";
 import { toHex, uploadToIPFS } from "../utils/ipfs-upload";
 import { PluginRepoFactory__factory } from "@aragon/osx-ethers";
 import { activeContractsList } from "@aragon/osx-ethers";
@@ -9,8 +9,8 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
-  const pluginName = "lemonade-communities-test-5";
-  const pluginSetupContractName = "GroupMultisigSetup";
+  const pluginName = "adenhall-subdao-test-19";
+  const pluginSetupContractName = "ParentChildPluginSetup";
   const { deployer } = await getNamedAccounts();
 
   const deployedSetupContract = await deploy(pluginSetupContractName, {
@@ -55,6 +55,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(
     `You can find the transaction address which published the ${pluginName} Plugin here: ${tx.hash}`
   );
+  console.log("Returned: ", tx.value);
 };
 
 export default func;

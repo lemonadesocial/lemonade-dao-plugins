@@ -1,0 +1,5 @@
+{
+    "name": "ParentChildPlugin",
+    "description": "This plugin attaches/detaches to a parent DAO",
+    "images": {}
+}
